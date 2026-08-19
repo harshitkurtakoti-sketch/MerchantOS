@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -17,8 +17,11 @@ import {
   Upload,
   History,
   Settings,
-  Sparkles
+  Sparkles,
+  Plus,
+  FileText
 } from 'lucide-react';
+import { QuickCreateModal } from '@/components/QuickCreateModal';
 
 const NAV_ITEMS = [
   { label: 'Command Center', href: '/dashboard', icon: LayoutDashboard },
@@ -31,6 +34,7 @@ const NAV_ITEMS = [
   { label: 'Risk Graph', href: '/dashboard/risk', icon: AlertTriangle },
   { label: 'Finance Readiness', href: '/dashboard/readiness', icon: Award },
   { label: 'Reverse Loan Simulator', href: '/dashboard/loan-simulator', icon: Calculator },
+  { label: 'Reports & PDF Export', href: '/dashboard/reports', icon: FileText },
   { label: 'Data Import', href: '/dashboard/import', icon: Upload },
   { label: 'Audit Trail', href: '/dashboard/audit', icon: History },
   { label: 'Settings', href: '/dashboard/settings', icon: Settings },
@@ -38,9 +42,20 @@ const NAV_ITEMS = [
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#FAFAFC] text-slate-900 flex font-sans selection:bg-emerald-500 selection:text-white">
+      {/* Quick Create Entry Modal */}
+      <QuickCreateModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={() => {
+          // Trigger a page refresh to update all twin engine states
+          window.location.reload();
+        }}
+      />
+
       {/* Sidebar Navigation */}
       <aside className="w-64 bg-white border-r border-slate-200/90 flex flex-col fixed inset-y-0 z-40 shadow-xs">
         <div className="p-5 border-b border-slate-100 flex items-center justify-between">
@@ -100,13 +115,20 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         {/* Header */}
         <header className="h-14 border-b border-slate-200/80 bg-white/80 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
           <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
-            <span>Prototype Data Boundary:</span>
+            <span>Data State:</span>
             <span className="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-700 font-mono text-[11px] font-semibold">
-              Synthetic Sandbox Data
+              Live Twin Workspace
             </span>
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="text-xs bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-all shadow-xs"
+            >
+              <Plus className="w-3.5 h-3.5 text-emerald-400" /> Add Real Entry
+            </button>
+
             <Link
               href="/dashboard/agent"
               className="text-xs bg-emerald-50 hover:bg-emerald-100/80 text-emerald-700 border border-emerald-200 px-3.5 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-colors shadow-xs"
