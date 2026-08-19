@@ -13,34 +13,39 @@ export default function AuditTrailPage() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto font-sans">
       <div>
-        <h1 className="text-2xl font-black text-slate-900 flex items-center gap-2">
-          <History className="w-6 h-6 text-emerald-600" /> Immutable Audit & Activity Log
+        <h1 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
+          <History className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 shrink-0" /> Immutable Audit & Activity Log
         </h1>
         <p className="text-xs text-slate-500 mt-1">
           Chronological evidence log of all financial mutations, scenario runs, and AI tool calls.
         </p>
       </div>
 
-      <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-4">
-        <div className="flex items-center justify-between">
+      <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pb-2 border-b border-slate-100">
           <span className="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Audit Stream</span>
           <span className="text-xs text-emerald-700 flex items-center gap-1 font-bold">
-            <ShieldCheck className="w-3.5 h-3.5" /> Append-Only Immutable Storage
+            <ShieldCheck className="w-3.5 h-3.5 shrink-0" /> Append-Only Immutable Storage
           </span>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {MOCK_AUDIT_LOGS.map(log => (
-            <div key={log.id} className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-4 text-xs">
-              <div>
-                <div className="flex items-center gap-2">
+            <div
+              key={log.id}
+              className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+            >
+              <div className="min-w-0 flex-1 space-y-1">
+                <div className="flex flex-wrap items-center gap-1.5">
                   <span className="font-bold text-slate-900">{log.action}</span>
-                  <span className="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-mono font-semibold">{log.entity}</span>
+                  <span className="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-mono font-semibold">
+                    {log.entity}
+                  </span>
                 </div>
-                <div className="text-slate-600 mt-0.5">{log.details}</div>
+                <div className="text-slate-600 text-xs break-words">{log.details}</div>
               </div>
 
-              <div className="text-right shrink-0">
+              <div className="flex items-center justify-between sm:flex-col sm:items-end text-slate-500 text-[11px] pt-2 sm:pt-0 border-t border-slate-200/60 sm:border-0 shrink-0">
                 <div className="text-slate-800 font-semibold">{log.user}</div>
                 <div className="text-[10px] text-slate-400 font-mono mt-0.5">{log.timestamp}</div>
               </div>
@@ -51,3 +56,4 @@ export default function AuditTrailPage() {
     </div>
   );
 }
+

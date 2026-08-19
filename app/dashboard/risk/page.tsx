@@ -20,8 +20,8 @@ export default function RiskGraphPage() {
   return (
     <div className="space-y-6 max-w-6xl mx-auto font-sans">
       <div>
-        <h1 className="text-2xl font-black text-slate-900 flex items-center gap-2">
-          <AlertTriangle className="w-6 h-6 text-amber-600" /> Risk Graph & Dependency Intelligence
+        <h1 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
+          <AlertTriangle className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600 shrink-0" /> Risk Graph & Dependency Intelligence
         </h1>
         <p className="text-xs text-slate-500 mt-1">
           Surfaces concentration and statistical anomaly risks with clear evidence backing. (Strict non-fraud terminology enforced).
@@ -32,7 +32,7 @@ export default function RiskGraphPage() {
         {events.map((e, idx) => (
           <div
             key={idx}
-            className={`p-6 rounded-2xl border transition-all shadow-sm ${
+            className={`p-4 sm:p-6 rounded-2xl border transition-all shadow-sm ${
               e.status === 'reviewed'
                 ? 'bg-slate-50/60 border-slate-200 opacity-70'
                 : e.severity === 'critical' || e.severity === 'high'
@@ -40,7 +40,8 @@ export default function RiskGraphPage() {
                 : 'bg-white border-slate-200/80'
             }`}
           >
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-4">
+
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center shrink-0">
                   <ShieldAlert className="w-5 h-5" />
