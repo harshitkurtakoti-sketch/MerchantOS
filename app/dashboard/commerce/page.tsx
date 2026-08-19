@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ShoppingBag, AlertCircle, Sparkles, TrendingUp, CheckCircle2, ArrowRight, PackageCheck, AlertTriangle } from 'lucide-react';
+import { ShoppingBag, AlertCircle, Sparkles, TrendingUp, CheckCircle2, ArrowRight, PackageCheck, AlertTriangle, Globe, Store, Smartphone, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { ProductMarginSummary } from '@/lib/engines/commerce';
 import { ProcurementRecommendation } from '@/lib/engines/procurement';
+import { OnlineChannelRecommendation } from '@/lib/engines/online_expansion';
 
 export default function CommerceIntelligencePage() {
   const [products, setProducts] = useState<ProductMarginSummary[]>([]);
@@ -12,6 +13,12 @@ export default function CommerceIntelligencePage() {
     total_capital_recommended: number;
     total_projected_profit: number;
     recommendations: ProcurementRecommendation[];
+  } | null>(null);
+  const [onlineData, setOnlineData] = useState<{
+    business_name: string;
+    category: string;
+    total_potential_monthly_uplift: string;
+    channels: OnlineChannelRecommendation[];
   } | null>(null);
 
   useEffect(() => {
@@ -22,6 +29,10 @@ export default function CommerceIntelligencePage() {
     fetch('/api/business/biz_rukmini_store/procurement')
       .then(r => r.json())
       .then(setProcurement);
+
+    fetch('/api/business/biz_rukmini_store/online-channels')
+      .then(r => r.json())
+      .then(setOnlineData);
   }, []);
 
   const losingProducts = products.filter(p => p.is_losing_money);
@@ -30,12 +41,98 @@ export default function CommerceIntelligencePage() {
     <div className="space-y-6 max-w-7xl mx-auto font-sans">
       <div>
         <h1 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
-          <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 shrink-0" /> Commerce Intelligence & Smart Buying Advisor
+          <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 shrink-0" /> Commerce Intelligence, Procurement & Online Expansion
         </h1>
         <p className="text-xs text-slate-500 mt-1">
-          Expose true product profitability and discover the most profitable inventory items to restock right now with evidence references.
+          Expose true contribution margins, smart restocking batches, and category-tailored platforms to sell your catalog online.
         </p>
       </div>
+
+      {/* Online Selling & Omnichannel Channels Section */}
+      {onlineData && (
+        <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                  Category: Retail / Kirana & Staples
+                </span>
+                <span className="text-xs text-slate-500 font-medium">Hyperlocal & Digital Expansion</span>
+              </div>
+              <h2 className="text-base sm:text-lg font-black text-slate-900 mt-1 flex items-center gap-2">
+                <Globe className="w-4 h-4 text-emerald-600" /> Recommended Platforms to Sell Your Products Online
+              </h2>
+            </div>
+
+            <div className="text-xs sm:text-right">
+              <div className="text-[10px] text-slate-400 font-semibold uppercase">Est. Monthly Online Uplift</div>
+              <div className="font-black text-emerald-700 text-sm sm:text-base">{onlineData.total_potential_monthly_uplift}</div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {onlineData.channels.map((ch, idx) => (
+              <div
+                key={idx}
+                className="p-4 sm:p-5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300 transition-all flex flex-col justify-between space-y-3.5 shadow-2xs"
+              >
+                <div className="space-y-2.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="text-sm sm:text-base font-extrabold text-slate-900 flex items-center gap-1.5">
+                        {ch.channel_name}
+                      </div>
+                      <div className="text-[11px] text-slate-500 font-medium">{ch.channel_type}</div>
+                    </div>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 shrink-0">
+                      {ch.fit_score_pct}% Fit Score
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-600 leading-relaxed font-medium">{ch.key_advantage}</p>
+
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200/70 text-xs">
+                    <div className="p-2 rounded-lg bg-white border border-slate-200/80">
+                      <div className="text-[10px] text-slate-400 font-semibold uppercase">Commission Fee</div>
+                      <div className="font-bold text-slate-800 text-xs mt-0.5">{ch.commission_structure}</div>
+                    </div>
+                    <div className="p-2 rounded-lg bg-white border border-slate-200/80">
+                      <div className="text-[10px] text-slate-400 font-semibold uppercase">Monthly Uplift</div>
+                      <div className="font-bold text-emerald-700 text-xs mt-0.5">{ch.estimated_monthly_revenue_uplift}</div>
+                    </div>
+                  </div>
+
+                  {ch.suitable_skus && ch.suitable_skus.length > 0 && (
+                    <div className="space-y-1.5 pt-1">
+                      <div className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+                        Top SKUs to List on this Channel:
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {ch.suitable_skus.map((sku, sIdx) => (
+                          <span
+                            key={sIdx}
+                            className="text-[11px] bg-white border border-slate-200/90 text-slate-800 px-2 py-1 rounded-lg font-medium shadow-3xs flex items-center gap-1"
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            <strong>{sku.name}</strong> (₹{sku.price})
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between text-xs">
+                  <span className="text-[11px] text-slate-500 font-medium">Setup: <strong className="text-slate-800">{ch.setup_time}</strong></span>
+                  <span className="text-[11px] font-bold text-emerald-700 flex items-center gap-1">
+                    Ready to Integrate <CheckCircle2 className="w-3.5 h-3.5" />
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Smart Purchasing Advisor Section */}
       {procurement && (
@@ -211,4 +308,5 @@ export default function CommerceIntelligencePage() {
     </div>
   );
 }
+
 

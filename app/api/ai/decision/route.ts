@@ -221,7 +221,41 @@ NEVER say "approved" or "you qualify" for loans (use "appears financially prepar
         provider: 'MerchantOS Deterministic Engine',
         is_real_ai: false,
       });
+    } else if (qLower.includes('online') || qLower.includes('ondc') || qLower.includes('blinkit') || qLower.includes('channel') || qLower.includes('sell') || qLower.includes('marketplace')) {
+      const channelTool = executeEngineTool('get_online_channel_recommendations', { business_id });
+      executedTools.push({ tool: 'get_online_channel_recommendations', ...channelTool });
+
+      const topChannels = channelTool.result.channels.slice(0, 3);
+      let channelStr = topChannels.map((c: any, idx: number) =>
+        `${idx + 1}. **${c.channel_name} (${c.channel_type})**\n` +
+        `   - Fit Score: **${c.fit_score_pct}% Match** | Setup: ${c.setup_time}\n` +
+        `   - Commission / Fee: **${c.commission_structure}**\n` +
+        `   - Est. Monthly Uplift: **${c.estimated_monthly_revenue_uplift}**\n` +
+        `   - Advantage: ${c.key_advantage}`
+      ).join('\n\n');
+
+      const rawAnswer =
+        `Based on your business category (**Retail / Kirana & Staples**), here are the top online platforms tailored for your product catalog:\n\n${channelStr}\n\n` +
+        `**Total Estimated Revenue Uplift:** **${channelTool.result.total_potential_monthly_uplift}**. You can start immediately with zero-commission channels like ONDC and WhatsApp Direct.`;
+
+      const validated = validateAndAttributeResponse(rawAnswer, executedTools);
+
+      return NextResponse.json({
+        question,
+        answer: validated.answer_text,
+        recommended_range: channelTool.result.total_potential_monthly_uplift,
+        confidence: 'High',
+        source_refs: validated.source_refs,
+        evidence: {
+          category: channelTool.result.category,
+          top_channel: topChannels[0]?.channel_name,
+          total_uplift: channelTool.result.total_potential_monthly_uplift,
+        },
+        provider: 'MerchantOS Deterministic Engine',
+        is_real_ai: false,
+      });
     } else if (qLower.includes('recommend') || qLower.includes('what to buy') || qLower.includes('procure') || qLower.includes('item') || qLower.includes('sku')) {
+
       const procTool = executeEngineTool('get_procurement_recommendations', { business_id });
       executedTools.push({ tool: 'get_procurement_recommendations', ...procTool });
 

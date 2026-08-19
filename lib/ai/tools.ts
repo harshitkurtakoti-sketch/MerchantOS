@@ -7,6 +7,7 @@ import { evaluateRiskGraph } from '../engines/risk';
 import { computeFinanceReadiness } from '../engines/finance_readiness';
 import { getSmartProcurementRecommendations } from '../engines/procurement';
 import { getBankLenderMatches } from '../engines/loan_simulator';
+import { getOnlineChannelRecommendations } from '../engines/online_expansion';
 import { store } from '../db/mock_store';
 
 export const AI_TOOLS_DEFINITIONS = [
@@ -46,6 +47,17 @@ export const AI_TOOLS_DEFINITIONS = [
   {
     name: 'get_procurement_recommendations',
     description: 'Returns smart buying recommendations on what inventory products to buy from suppliers, unit contribution margins, recommended batch quantity, capital investment, and projected ROI.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        business_id: { type: 'string' },
+      },
+      required: ['business_id'],
+    },
+  },
+  {
+    name: 'get_online_channel_recommendations',
+    description: 'Returns category-tailored online selling platform recommendations (ONDC, Blinkit, WhatsApp Catalog, Amazon, IndiaMART) with commission rates, monthly sales uplift, and suitable catalog SKUs.',
     input_schema: {
       type: 'object',
       properties: {
@@ -151,6 +163,13 @@ export function executeEngineTool(name: string, args: any): { result: any; sourc
         source_refs: res.recommendations.map(r => `engine:procurement:${r.sku}:roi:${r.roi_pct}%`),
       };
     }
+    case 'get_online_channel_recommendations': {
+      const res = getOnlineChannelRecommendations(bId);
+      return {
+        result: res,
+        source_refs: res.channels.map(c => `engine:channel:${c.channel_id}:fit:${c.fit_score_pct}%`),
+      };
+    }
     case 'get_bank_lender_matches': {
       const res = getBankLenderMatches(bId, args.loan_amount || 500000);
       return {
@@ -194,4 +213,5 @@ export function executeEngineTool(name: string, args: any): { result: any; sourc
       return { result: { error: 'Unknown tool' }, source_refs: [] };
   }
 }
+
 
