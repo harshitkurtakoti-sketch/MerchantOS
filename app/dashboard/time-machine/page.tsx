@@ -38,25 +38,25 @@ export default function TimeMachinePage() {
   }, [horizon, salesDelta, inventoryPurchase, priceDelta]);
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-6 max-w-7xl mx-auto font-sans">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-white flex items-center gap-2">
-            <LineIcon className="w-6 h-6 text-emerald-400" /> Financial Time Machine
+          <h1 className="text-2xl font-black text-slate-900 flex items-center gap-2">
+            <LineIcon className="w-6 h-6 text-emerald-600" /> Financial Time Machine
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Simulate future cash trajectories. Move assumption sliders to see cash-stress dips recompute live.
           </p>
         </div>
 
         {/* Horizon Presets */}
-        <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 p-1 rounded-xl self-start md:self-auto">
+        <div className="flex items-center gap-1.5 bg-slate-100 border border-slate-200/80 p-1 rounded-xl self-start md:self-auto">
           {[30, 60, 90, 180].map(h => (
             <button
               key={h}
               onClick={() => setHorizon(h)}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                horizon === h ? 'bg-emerald-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'
+                horizon === h ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               {h} Days
@@ -67,11 +67,11 @@ export default function TimeMachinePage() {
 
       {/* Cash Stress Alert Warning */}
       {forecast?.has_cash_stress && (
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 flex items-start gap-3 shadow-xs">
+          <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
           <div>
-            <div className="text-sm font-bold text-rose-300">Cash Stress Warning Detected</div>
-            <div className="text-xs text-rose-200/80 mt-0.5">
+            <div className="text-sm font-extrabold text-rose-900">Cash Stress Warning Detected</div>
+            <div className="text-xs text-rose-800 mt-0.5">
               Under these assumptions, projected cash drops below your safety threshold (₹{forecast.safety_threshold.toLocaleString('en-IN')}) on {forecast.cash_stress_dates.length} days.
             </div>
           </div>
@@ -79,10 +79,10 @@ export default function TimeMachinePage() {
       )}
 
       {/* Main Chart Card */}
-      <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
+      <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-4">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">Projected Cash Trajectory (₹ INR)</span>
-          <span className="text-xs text-slate-400">Safety Floor: ₹{forecast?.safety_threshold?.toLocaleString('en-IN')}</span>
+          <span className="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Projected Cash Trajectory (₹ INR)</span>
+          <span className="text-xs text-slate-500 font-semibold">Safety Floor: ₹{forecast?.safety_threshold?.toLocaleString('en-IN')}</span>
         </div>
 
         <div className="h-80 w-full pt-4">
@@ -90,33 +90,33 @@ export default function TimeMachinePage() {
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={forecast.points}>
                 <defs>
-                  <linearGradient id="cashGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
+                  <linearGradient id="cashGradLight" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#059669" stopOpacity={0.25} />
+                    <stop offset="95%" stopColor="#059669" stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="date" stroke="#64748b" tick={{ fontSize: 10 }} />
-                <YAxis stroke="#64748b" tick={{ fontSize: 10 }} tickFormatter={v => `₹${(v / 1000).toFixed(0)}k`} />
+                <XAxis dataKey="date" stroke="#94a3b8" tick={{ fontSize: 10 }} />
+                <YAxis stroke="#94a3b8" tick={{ fontSize: 10 }} tickFormatter={v => `₹${(v / 1000).toFixed(0)}k`} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#090d16', borderColor: '#1e293b', borderRadius: '12px', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '12px', fontSize: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
                   formatter={(val: any) => [`₹${Number(val).toLocaleString('en-IN')}`, '']}
                 />
-                <ReferenceLine y={forecast.safety_threshold} stroke="#ef4444" strokeDasharray="3 3" label={{ value: 'Safety Floor', fill: '#ef4444', fontSize: 10 }} />
-                <Area type="monotone" dataKey="upper_bound" stroke="none" fill="#10b981" fillOpacity={0.08} />
-                <Area type="monotone" dataKey="projected_cash" stroke="#10b981" strokeWidth={3} fill="url(#cashGrad)" />
+                <ReferenceLine y={forecast.safety_threshold} stroke="#dc2626" strokeDasharray="3 3" label={{ value: 'Safety Floor', fill: '#dc2626', fontSize: 10, fontWeight: 'bold' }} />
+                <Area type="monotone" dataKey="upper_bound" stroke="none" fill="#059669" fillOpacity={0.08} />
+                <Area type="monotone" dataKey="projected_cash" stroke="#059669" strokeWidth={3} fill="url(#cashGradLight)" />
               </ComposedChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-full flex items-center justify-center text-slate-500 text-xs">Loading chart...</div>
+            <div className="h-full flex items-center justify-center text-slate-400 text-xs">Loading chart...</div>
           )}
         </div>
       </div>
 
       {/* Assumption Sliders */}
-      <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-6">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider">
-            <Sliders className="w-4 h-4 text-emerald-400" /> Interactive Time Machine Sliders
+      <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-6">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="flex items-center gap-2 text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+            <Sliders className="w-4 h-4 text-emerald-600" /> Interactive Time Machine Sliders
           </div>
           <button
             onClick={() => {
@@ -124,7 +124,7 @@ export default function TimeMachinePage() {
               setInventoryPurchase(0);
               setPriceDelta(0);
             }}
-            className="text-xs text-slate-400 hover:text-white flex items-center gap-1"
+            className="text-xs text-slate-500 hover:text-slate-900 font-semibold flex items-center gap-1"
           >
             <RefreshCw className="w-3 h-3" /> Reset Sliders
           </button>
@@ -134,8 +134,8 @@ export default function TimeMachinePage() {
           {/* Sales Change Slider */}
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
-              <span className="text-slate-300 font-medium">Sales Change (%)</span>
-              <span className={`font-bold ${salesDelta >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+              <span className="text-slate-700 font-semibold">Sales Change (%)</span>
+              <span className={`font-extrabold ${salesDelta >= 0 ? 'text-emerald-700' : 'text-rose-600'}`}>
                 {salesDelta > 0 ? `+${salesDelta}%` : `${salesDelta}%`}
               </span>
             </div>
@@ -145,15 +145,15 @@ export default function TimeMachinePage() {
               max="50"
               value={salesDelta}
               onChange={e => setSalesDelta(Number(e.target.value))}
-              className="w-full accent-emerald-500 cursor-pointer"
+              className="w-full accent-emerald-600 cursor-pointer"
             />
           </div>
 
           {/* Inventory Purchase Slider */}
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
-              <span className="text-slate-300 font-medium">Inventory Purchase (₹)</span>
-              <span className="font-bold text-amber-400">₹{inventoryPurchase.toLocaleString('en-IN')}</span>
+              <span className="text-slate-700 font-semibold">Inventory Purchase (₹)</span>
+              <span className="font-extrabold text-amber-700">₹{inventoryPurchase.toLocaleString('en-IN')}</span>
             </div>
             <input
               type="range"
@@ -162,15 +162,15 @@ export default function TimeMachinePage() {
               step="25000"
               value={inventoryPurchase}
               onChange={e => setInventoryPurchase(Number(e.target.value))}
-              className="w-full accent-amber-500 cursor-pointer"
+              className="w-full accent-amber-600 cursor-pointer"
             />
           </div>
 
           {/* Price Change Slider */}
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
-              <span className="text-slate-300 font-medium">Price Change (%)</span>
-              <span className={`font-bold ${priceDelta >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+              <span className="text-slate-700 font-semibold">Price Change (%)</span>
+              <span className={`font-extrabold ${priceDelta >= 0 ? 'text-emerald-700' : 'text-rose-600'}`}>
                 {priceDelta > 0 ? `+${priceDelta}%` : `${priceDelta}%`}
               </span>
             </div>
@@ -180,7 +180,7 @@ export default function TimeMachinePage() {
               max="30"
               value={priceDelta}
               onChange={e => setPriceDelta(Number(e.target.value))}
-              className="w-full accent-cyan-500 cursor-pointer"
+              className="w-full accent-teal-600 cursor-pointer"
             />
           </div>
         </div>

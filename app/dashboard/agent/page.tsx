@@ -81,17 +81,17 @@ function AgentPageContent() {
   }, [initialQ]);
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 flex flex-col h-[calc(100vh-6rem)]">
+    <div className="max-w-4xl mx-auto space-y-6 flex flex-col h-[calc(100vh-6rem)] font-sans">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-black text-white flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-emerald-400" /> AI Decision Agent
+          <h1 className="text-xl font-black text-slate-900 flex items-center gap-2">
+            <MessageSquare className="w-5 h-5 text-emerald-600" /> AI Decision Agent
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Tool-calling financial decision co-pilot. All answers are backed by deterministic engine calculations.
           </p>
         </div>
-        <span className="text-[11px] bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-full font-bold">
+        <span className="text-[11px] bg-emerald-50 border border-emerald-200 text-emerald-700 px-2.5 py-1 rounded-full font-extrabold">
           Strict Evidence Guardrails Active
         </span>
       </div>
@@ -102,7 +102,7 @@ function AgentPageContent() {
           <button
             key={i}
             onClick={() => handleSend(s)}
-            className="text-xs bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-white px-3 py-1.5 rounded-xl whitespace-nowrap transition-colors"
+            className="text-xs bg-white border border-slate-200 hover:border-emerald-500/50 text-slate-700 hover:text-slate-900 px-3 py-1.5 rounded-xl whitespace-nowrap transition-colors shadow-2xs font-medium"
           >
             {s}
           </button>
@@ -110,30 +110,30 @@ function AgentPageContent() {
       </div>
 
       {/* Chat Messages Log */}
-      <div className="flex-1 overflow-y-auto space-y-4 p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
+      <div className="flex-1 overflow-y-auto space-y-4 p-4 rounded-2xl bg-slate-50/70 border border-slate-200/80 shadow-inner">
         {messages.map(m => (
           <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div
-              className={`max-w-2xl rounded-2xl p-4 text-xs space-y-3 ${
+              className={`max-w-2xl rounded-2xl p-4 text-xs space-y-3 shadow-2xs ${
                 m.role === 'user'
-                  ? 'bg-emerald-500 text-slate-950 font-semibold'
-                  : 'bg-slate-950 border border-slate-800 text-slate-200'
+                  ? 'bg-slate-900 text-white font-medium'
+                  : 'bg-white border border-slate-200/90 text-slate-800'
               }`}
             >
               <div className="whitespace-pre-wrap leading-relaxed">{m.text}</div>
 
               {m.recommended_range && (
-                <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-bold">
+                <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-extrabold">
                   Recommended Range: {m.recommended_range}
                 </div>
               )}
 
               {/* Evidence Panel Accordion */}
               {m.evidence && (
-                <div className="pt-2 border-t border-slate-800">
+                <div className="pt-2 border-t border-slate-100">
                   <button
                     onClick={() => setExpandedMsgId(expandedMsgId === m.id ? null : m.id)}
-                    className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-400 hover:text-emerald-300"
+                    className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 hover:text-emerald-800"
                   >
                     <FileText className="w-3.5 h-3.5" />
                     Why? Show Evidence & Tool Sources ({m.source_refs?.length || 0})
@@ -141,14 +141,14 @@ function AgentPageContent() {
                   </button>
 
                   {expandedMsgId === m.id && (
-                    <div className="mt-3 p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-2 text-[11px]">
-                      <div className="font-bold text-slate-300">Deterministic Engine Evidence:</div>
-                      <pre className="p-2 rounded bg-slate-950 text-slate-300 font-mono text-[10px] overflow-x-auto">
+                    <div className="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-[11px]">
+                      <div className="font-bold text-slate-800">Deterministic Engine Evidence:</div>
+                      <pre className="p-2 rounded-lg bg-white border border-slate-200 text-slate-800 font-mono text-[10px] overflow-x-auto">
                         {JSON.stringify(m.evidence, null, 2)}
                       </pre>
                       <div className="flex flex-wrap gap-1 pt-1">
                         {m.source_refs?.map((ref, rIdx) => (
-                          <span key={rIdx} className="text-[9px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded font-mono">
+                          <span key={rIdx} className="text-[9px] bg-slate-200/70 text-slate-700 px-1.5 py-0.5 rounded font-mono font-semibold">
                             {ref}
                           </span>
                         ))}
@@ -163,8 +163,8 @@ function AgentPageContent() {
 
         {loading && (
           <div className="flex justify-start">
-            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-slate-400 flex items-center gap-2 animate-pulse">
-              <Sparkles className="w-4 h-4 text-emerald-400 animate-spin" />
+            <div className="p-4 rounded-2xl bg-white border border-slate-200 text-xs text-slate-500 flex items-center gap-2 animate-pulse shadow-xs font-medium">
+              <Sparkles className="w-4 h-4 text-emerald-600 animate-spin" />
               Running deterministic tools & generating response...
             </div>
           </div>
@@ -184,12 +184,12 @@ function AgentPageContent() {
           value={input}
           onChange={e => setInput(e.target.value)}
           placeholder="Ask a decision question (e.g. Can I afford ₹3L inventory?)..."
-          className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
+          className="flex-1 bg-white border border-slate-300 rounded-xl px-4 py-3 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition-all shadow-xs"
         />
         <button
           type="submit"
           disabled={loading}
-          className="px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-all flex items-center gap-1.5"
+          className="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-all flex items-center gap-1.5 shadow-md shadow-emerald-600/20"
         >
           Send <Send className="w-3.5 h-3.5" />
         </button>
@@ -200,7 +200,7 @@ function AgentPageContent() {
 
 export default function AgentPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-slate-500 animate-pulse text-xs">Loading AI Decision Co-Pilot...</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-slate-400 animate-pulse text-xs">Loading AI Decision Co-Pilot...</div>}>
       <AgentPageContent />
     </Suspense>
   );
