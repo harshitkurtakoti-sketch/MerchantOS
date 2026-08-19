@@ -5,6 +5,8 @@ import { runDeterministicScenario } from '../engines/scenario';
 import { computeTimeMachineForecast } from '../engines/time_machine';
 import { evaluateRiskGraph } from '../engines/risk';
 import { computeFinanceReadiness } from '../engines/finance_readiness';
+import { getSmartProcurementRecommendations } from '../engines/procurement';
+import { getBankLenderMatches } from '../engines/loan_simulator';
 import { store } from '../db/mock_store';
 
 export const AI_TOOLS_DEFINITIONS = [
@@ -37,6 +39,29 @@ export const AI_TOOLS_DEFINITIONS = [
       type: 'object',
       properties: {
         business_id: { type: 'string' },
+      },
+      required: ['business_id'],
+    },
+  },
+  {
+    name: 'get_procurement_recommendations',
+    description: 'Returns smart buying recommendations on what inventory products to buy from suppliers, unit contribution margins, recommended batch quantity, capital investment, and projected ROI.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        business_id: { type: 'string' },
+      },
+      required: ['business_id'],
+    },
+  },
+  {
+    name: 'get_bank_lender_matches',
+    description: 'Returns eligible bank loans (HDFC, SBI, ICICI, Kotak, SIDBI), estimated sanction probabilities, interest rate ranges, turnaround times, and approval drivers based on business readiness.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        business_id: { type: 'string' },
+        loan_amount: { type: 'number', description: 'Desired loan amount in rupees' },
       },
       required: ['business_id'],
     },
@@ -119,6 +144,20 @@ export function executeEngineTool(name: string, args: any): { result: any; sourc
         source_refs: res.map(p => `engine:product:${p.sku}:margin:${p.true_contribution_margin}`),
       };
     }
+    case 'get_procurement_recommendations': {
+      const res = getSmartProcurementRecommendations(bId);
+      return {
+        result: res,
+        source_refs: res.recommendations.map(r => `engine:procurement:${r.sku}:roi:${r.roi_pct}%`),
+      };
+    }
+    case 'get_bank_lender_matches': {
+      const res = getBankLenderMatches(bId, args.loan_amount || 500000);
+      return {
+        result: res,
+        source_refs: res.map(b => `engine:bank:${b.bank_name}:prob:${b.sanction_probability_pct}%`),
+      };
+    }
     case 'get_time_machine_forecast': {
       const res = computeTimeMachineForecast(bId, args.horizon_days || 90);
       return {
@@ -155,3 +194,4 @@ export function executeEngineTool(name: string, args: any): { result: any; sourc
       return { result: { error: 'Unknown tool' }, source_refs: [] };
   }
 }
+

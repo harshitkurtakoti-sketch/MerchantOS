@@ -15,11 +15,13 @@ interface ChatMessage {
 }
 
 const SUGGESTIONS = [
+  'Which bank is most likely to sanction my loan at what interest rate?',
+  'What are the best items to buy from my supplier right now?',
   'Can I afford ₹3L of inventory?',
   'What is my current Health Score breakdown?',
   'Which products are currently losing money?',
-  'What happens if sales drop by 20%?',
 ];
+
 
 function AgentPageContent() {
   const searchParams = useSearchParams();

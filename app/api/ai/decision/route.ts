@@ -182,7 +182,78 @@ NEVER say "approved" or "you qualify" for loans (use "appears financially prepar
     const qLower = question.toLowerCase();
     const executedTools: Array<{ tool: string; result: any; source_refs: string[] }> = [];
 
-    if (qLower.includes('inventory') || qLower.includes('afford') || qLower.includes('buy')) {
+    if (qLower.includes('bank') || qLower.includes('sanction') || qLower.includes('loan') || qLower.includes('interest')) {
+      const bankTool = executeEngineTool('get_bank_lender_matches', { business_id, loan_amount: 500000 });
+      const readyTool = executeEngineTool('get_finance_readiness', { business_id });
+      executedTools.push(
+        { tool: 'get_bank_lender_matches', ...bankTool },
+        { tool: 'get_finance_readiness', ...readyTool }
+      );
+
+      const topBank = bankTool.result[0];
+      const secondBank = bankTool.result[1];
+      const rawAnswer =
+        `Based on your **${readyTool.result.score}/100 Financial Readiness Index**, you have strong sanction likelihood across multiple lenders:\n\n` +
+        `1. **${topBank.bank_name} (${topBank.scheme_name})**\n` +
+        `   - Sanction Likelihood: **${topBank.sanction_probability_pct}% (${topBank.likelihood_badge})**\n` +
+        `   - Indicative Rate: **${topBank.interest_rate_range}** (Indicative: ${topBank.indicative_interest_rate_pct}% p.a.)\n` +
+        `   - Max Sanction: **₹${(topBank.max_sanction_limit / 100000).toFixed(1)} Lakhs** | Turnaround: ${topBank.processing_turnaround_days}\n\n` +
+        `2. **${secondBank.bank_name} (${secondBank.scheme_name})**\n` +
+        `   - Sanction Likelihood: **${secondBank.sanction_probability_pct}%**\n` +
+        `   - Indicative Rate: **${secondBank.interest_rate_range}**\n` +
+        `   - Max Sanction: **₹${(secondBank.max_sanction_limit / 100000).toFixed(1)} Lakhs**\n\n` +
+        `*Note: Financing readiness indicates operational preparedness; final approval remains subject to lender underwriting.*`;
+
+      const validated = validateAndAttributeResponse(rawAnswer, executedTools);
+
+      return NextResponse.json({
+        question,
+        answer: validated.answer_text,
+        recommended_range: `${topBank.indicative_interest_rate_pct}% – ${secondBank.indicative_interest_rate_pct}% p.a.`,
+        confidence: 'High',
+        source_refs: validated.source_refs,
+        evidence: {
+          readiness_score: readyTool.result.score,
+          matched_lenders_count: bankTool.result.length,
+          top_lender: topBank.bank_name,
+          top_rate: topBank.interest_rate_range,
+        },
+        provider: 'MerchantOS Deterministic Engine',
+        is_real_ai: false,
+      });
+    } else if (qLower.includes('recommend') || qLower.includes('what to buy') || qLower.includes('procure') || qLower.includes('item') || qLower.includes('sku')) {
+      const procTool = executeEngineTool('get_procurement_recommendations', { business_id });
+      executedTools.push({ tool: 'get_procurement_recommendations', ...procTool });
+
+      const recs = procTool.result.recommendations.slice(0, 3);
+      let listStr = recs.map((r: any, idx: number) =>
+        `${idx + 1}. **${r.product_name} (${r.sku})**\n` +
+        `   - Supplier: **${r.supplier_name}** | Unit Cost: ₹${r.unit_cost} | Retail: ₹${r.retail_price}\n` +
+        `   - True Unit Margin: **₹${r.true_margin_per_unit} (+${r.margin_pct}%)** | ROI: **+${r.roi_pct}%**\n` +
+        `   - Recommended Batch: **${r.recommended_order_quantity} units** (Total: ₹${r.total_investment_required.toLocaleString('en-IN')}) → Est. Profit: **+₹${r.projected_net_profit.toLocaleString('en-IN')}**`
+      ).join('\n\n');
+
+      const rawAnswer =
+        `Here are your top high-margin replenishment opportunities from your verified suppliers:\n\n${listStr}\n\n` +
+        `Total Recommended Capital: **₹${procTool.result.total_capital_recommended.toLocaleString('en-IN')}** for an estimated profit of **₹${procTool.result.total_projected_profit.toLocaleString('en-IN')}**.`;
+
+      const validated = validateAndAttributeResponse(rawAnswer, executedTools);
+
+      return NextResponse.json({
+        question,
+        answer: validated.answer_text,
+        recommended_range: `₹${procTool.result.total_capital_recommended.toLocaleString('en-IN')}`,
+        confidence: 'High',
+        source_refs: validated.source_refs,
+        evidence: {
+          total_capital_recommended: procTool.result.total_capital_recommended,
+          total_projected_profit: procTool.result.total_projected_profit,
+          top_recommendation: recs[0]?.product_name,
+        },
+        provider: 'MerchantOS Deterministic Engine',
+        is_real_ai: false,
+      });
+    } else if (qLower.includes('inventory') || qLower.includes('afford') || qLower.includes('buy')) {
       const cashTool = executeEngineTool('get_cash_position', { business_id });
       const tmTool = executeEngineTool('get_time_machine_forecast', { business_id, horizon_days: 90 });
       const scenToolSafe = executeEngineTool('run_scenario', { business_id, inventory_purchase_amount: 150000 });
@@ -269,4 +340,5 @@ NEVER say "approved" or "you qualify" for loans (use "appears financially prepar
     return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 });
   }
 }
+
 
