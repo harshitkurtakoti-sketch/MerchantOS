@@ -36,7 +36,7 @@ Every number you mention must be directly sourced from a tool result.
 NEVER use the word "fraud" unqualified (use "unusual pattern" or "review recommended").
 NEVER say "approved" or "you qualify" for loans (use "appears financially prepared for additional working-capital financing, subject to lender underwriting").`;
 
-    // 1. Groq API Key Execution (Llama 3.3 70B Versatile)
+    // 1. Groq API Key Execution (groq/compound model)
     if (hasGroqKey) {
       const groq = new Groq({ apiKey: groqKey! });
       const messages: any[] = [
@@ -44,67 +44,72 @@ NEVER say "approved" or "you qualify" for loans (use "appears financially prepar
         { role: 'user', content: question },
       ];
 
-      const initialResponse = await groq.chat.completions.create({
-        model: 'llama-3.3-70b-versatile',
-        messages,
-        tools: GROQ_TOOLS,
-        tool_choice: 'auto',
-        max_tokens: 1024,
-      });
-
-      const responseMessage = initialResponse.choices[0]?.message;
-      const executedTools: Array<{ tool: string; result: any; source_refs: string[] }> = [];
-
-      if (responseMessage?.tool_calls && responseMessage.tool_calls.length > 0) {
-        messages.push(responseMessage);
-
-        for (const toolCall of responseMessage.tool_calls) {
-          const toolName = toolCall.function.name;
-          const toolArgs = JSON.parse(toolCall.function.arguments || '{}');
-          const toolExec = executeEngineTool(toolName, { ...toolArgs, business_id });
-
-          executedTools.push({ tool: toolName, ...toolExec });
-
-          messages.push({
-            tool_call_id: toolCall.id,
-            role: 'tool',
-            name: toolName,
-            content: JSON.stringify(toolExec.result),
-          });
-        }
-
-        const finalResponse = await groq.chat.completions.create({
-          model: 'llama-3.3-70b-versatile',
+      try {
+        const initialResponse = await groq.chat.completions.create({
+          model: 'groq/compound',
           messages,
+          tools: GROQ_TOOLS,
+          tool_choice: 'auto',
           max_tokens: 1024,
         });
 
-        const answerText = finalResponse.choices[0]?.message?.content || 'Simulation complete.';
-        const validated = validateAndAttributeResponse(answerText, executedTools);
+        const responseMessage = initialResponse.choices[0]?.message;
+        const executedTools: Array<{ tool: string; result: any; source_refs: string[] }> = [];
 
-        return NextResponse.json({
-          question,
-          answer: validated.answer_text,
-          recommended_range: validated.recommended_range,
-          confidence: validated.confidence,
-          source_refs: validated.source_refs,
-          evidence: validated.evidence_panel,
-          provider: 'Groq (Llama 3.3 70B)',
-          is_real_ai: true,
-        });
-      } else {
-        const answerText = responseMessage?.content || 'No tool required.';
-        const validated = validateAndAttributeResponse(answerText, []);
+        if (responseMessage?.tool_calls && responseMessage.tool_calls.length > 0) {
+          messages.push(responseMessage);
 
-        return NextResponse.json({
-          question,
-          answer: validated.answer_text,
-          confidence: 'High',
-          source_refs: [],
-          evidence: {},
-          provider: 'Groq (Llama 3.3 70B)',
-          is_real_ai: true,
-        });
+          for (const toolCall of responseMessage.tool_calls) {
+            const toolName = toolCall.function.name;
+            const toolArgs = JSON.parse(toolCall.function.arguments || '{}');
+            const toolExec = executeEngineTool(toolName, { ...toolArgs, business_id });
+
+            executedTools.push({ tool: toolName, ...toolExec });
+
+            messages.push({
+              tool_call_id: toolCall.id,
+              role: 'tool',
+              name: toolName,
+              content: JSON.stringify(toolExec.result),
+            });
+          }
+
+          const finalResponse = await groq.chat.completions.create({
+            model: 'groq/compound',
+            messages,
+            max_tokens: 1024,
+          });
+
+          const answerText = finalResponse.choices[0]?.message?.content || 'Simulation complete.';
+          const validated = validateAndAttributeResponse(answerText, executedTools);
+
+          return NextResponse.json({
+            question,
+            answer: validated.answer_text,
+            recommended_range: validated.recommended_range,
+            confidence: validated.confidence,
+            source_refs: validated.source_refs,
+            evidence: validated.evidence_panel,
+            provider: 'Groq (groq/compound)',
+            is_real_ai: true,
+          });
+        } else {
+          const answerText = responseMessage?.content || 'No tool required.';
+          const validated = validateAndAttributeResponse(answerText, []);
+
+          return NextResponse.json({
+            question,
+            answer: validated.answer_text,
+            confidence: 'High',
+            source_refs: [],
+            evidence: {},
+            provider: 'Groq (groq/compound)',
+            is_real_ai: true,
+          });
+        }
+      } catch (groqErr: any) {
+        console.error('Groq Execution Error:', groqErr);
+        // Fallthrough to deterministic engine if model error occurs
       }
     }
 
@@ -178,7 +183,7 @@ NEVER say "approved" or "you qualify" for loans (use "appears financially prepar
       }
     }
 
-    // 3. Fallback Deterministic Engine Orchestration (If no API keys provided)
+    // 3. Fallback Deterministic Engine Orchestration
     const qLower = question.toLowerCase();
     const executedTools: Array<{ tool: string; result: any; source_refs: string[] }> = [];
 
