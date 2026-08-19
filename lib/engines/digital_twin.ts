@@ -45,7 +45,8 @@ export function getDigitalTwinState(businessId: string): DigitalTwinSnapshot {
   const openRecVal = receivables.reduce((acc, r) => acc + r.amount, 0);
   const openPayVal = payables.reduce((acc, p) => acc + p.amount, 0);
 
-  const inventoryVal = products.reduce((acc, p) => acc + p.cost_price * 45, 0); // 45 units avg stock
+  const inventoryVal = products.reduce((acc, p) => acc + p.cost_price * 45, 0);
+
   const overstockedCount = products.filter(p => p.sku.includes('BRASS')).length;
 
   return {

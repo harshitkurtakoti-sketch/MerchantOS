@@ -26,7 +26,7 @@ export default function CommerceIntelligencePage() {
         </p>
       </div>
 
-      {/* Losing Money Warning Banner */}
+
       {losingProducts.length > 0 && (
         <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 flex items-start gap-3 shadow-xs">
           <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
@@ -41,7 +41,7 @@ export default function CommerceIntelligencePage() {
         </div>
       )}
 
-      {/* Product Profitability Table */}
+
       <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-4">
         <div className="flex items-center justify-between">
           <span className="text-xs font-extrabold text-slate-700 uppercase tracking-wider">SKU Net Contribution Ranking</span>

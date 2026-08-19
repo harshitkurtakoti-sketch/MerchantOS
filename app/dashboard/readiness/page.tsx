@@ -39,7 +39,7 @@ export default function FinanceReadinessPage() {
         </p>
       </div>
 
-      {/* Mandatory Non-Committal Disclaimer Banner */}
+
       <div className="p-4 rounded-xl bg-slate-100 border border-slate-200 flex items-start gap-3 shadow-xs">
         <Info className="w-5 h-5 text-teal-600 shrink-0 mt-0.5" />
         <div className="text-xs text-slate-700">
@@ -47,7 +47,7 @@ export default function FinanceReadinessPage() {
         </div>
       </div>
 
-      {/* Main Score Hero Card */}
+
       <div className="p-8 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex flex-col md:flex-row items-center justify-between gap-8">
         <div className="flex items-center gap-6">
           <div className="relative w-32 h-32 flex items-center justify-center rounded-full bg-emerald-50/50 border-4 border-emerald-500 shadow-xl shadow-emerald-500/10">
@@ -80,7 +80,7 @@ export default function FinanceReadinessPage() {
         </div>
       </div>
 
-      {/* Sub-score breakdown */}
+
       <div className="space-y-4">
         <h3 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Underwriting Component Scores</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

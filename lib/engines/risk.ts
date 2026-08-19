@@ -5,7 +5,6 @@ export function evaluateRiskGraph(businessId: string): RiskEvent[] {
   const existingRisks = store.risk_events.filter(r => r.business_id === businessId);
   const transactions = store.transactions.filter(t => t.business_id === businessId);
 
-  // Dynamic check for new concentration or anomaly events
   const supplierSpendMap: Record<string, { total: number; supplierName: string; supplierId?: string }> = {};
   let totalInventorySpend = 0;
 
@@ -20,7 +19,6 @@ export function evaluateRiskGraph(businessId: string): RiskEvent[] {
 
   const generatedEvents: RiskEvent[] = [...existingRisks];
 
-  // Supplier Concentration Rule (>40%)
   Object.entries(supplierSpendMap).forEach(([name, data]) => {
     const concentrationPct = totalInventorySpend > 0 ? (data.total / totalInventorySpend) * 100 : 0;
     if (concentrationPct > 40 && !generatedEvents.some(e => e.evidence?.supplier_name === name && e.rule_triggered.includes('Concentration'))) {
@@ -44,7 +42,6 @@ export function evaluateRiskGraph(businessId: string): RiskEvent[] {
     }
   });
 
-  // Strict Language Guardrail Verification
   return generatedEvents.map(event => {
     const cleanRule = sanitizeRiskText(event.rule_triggered);
     const cleanPhrasing = event.evidence?.phrasing_template
@@ -63,6 +60,6 @@ export function evaluateRiskGraph(businessId: string): RiskEvent[] {
 }
 
 function sanitizeRiskText(text: string): string {
-  // Enforce rule PRD Section 11.3: Never say "fraud" unqualified
   return text.replace(/\bfraud\b/gi, 'unusual pattern');
 }
+

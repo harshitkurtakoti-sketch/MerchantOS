@@ -45,19 +45,18 @@ export default function CommandCenter() {
   }
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
-      {/* Ask MerchantOS AI Header Banner */}
-      <div className="p-6 rounded-2xl bg-gradient-to-r from-emerald-50/80 via-white to-teal-50/80 border border-emerald-200/80 shadow-sm relative overflow-hidden">
+    <div className="space-y-4 sm:space-y-6 max-w-7xl mx-auto">
+      <div className="p-4 sm:p-6 rounded-2xl bg-gradient-to-r from-emerald-50/80 via-white to-teal-50/80 border border-emerald-200/80 shadow-xs relative overflow-hidden">
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs font-extrabold text-emerald-700 uppercase tracking-wider mb-1">
-              <Sparkles className="w-4 h-4 text-emerald-600" /> AI Decision Assistant
+              <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" /> AI Decision Assistant
             </div>
-            <h1 className="text-xl font-extrabold text-slate-900">"Can I afford ₹3 Lakhs of inventory?"</h1>
+            <h1 className="text-lg sm:text-xl font-extrabold text-slate-900">"Can I afford ₹3 Lakhs of inventory?"</h1>
             <p className="text-xs text-slate-600 mt-1">Ask any financial question — MerchantOS simulates the impact before you act.</p>
           </div>
 
-          <form onSubmit={handleAskAI} className="w-full md:w-auto flex items-center gap-2">
+          <form onSubmit={handleAskAI} className="w-full md:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <input
               type="text"
               placeholder="Ask a financial decision question..."
@@ -67,7 +66,7 @@ export default function CommandCenter() {
             />
             <button
               type="submit"
-              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-emerald-600/20 flex items-center gap-1 shrink-0"
+              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-emerald-600/20 flex items-center justify-center gap-1 shrink-0"
             >
               Ask <ArrowRight className="w-3.5 h-3.5" />
             </button>
@@ -75,13 +74,11 @@ export default function CommandCenter() {
         </div>
       </div>
 
-      {/* Top 3 KPI Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Health Score Card */}
-        <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+        <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-              <HeartPulse className="w-4 h-4 text-emerald-600" /> Business Health Score
+              <HeartPulse className="w-4 h-4 text-emerald-600 shrink-0" /> Business Health Score
             </span>
             <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded font-bold">
               {health.confidence} Confidence
@@ -89,7 +86,7 @@ export default function CommandCenter() {
           </div>
 
           <div className="flex items-baseline gap-3 my-2">
-            <span className="text-5xl font-black text-slate-900">{health.score}</span>
+            <span className="text-4xl sm:text-5xl font-black text-slate-900">{health.score}</span>
             <span className="text-sm font-semibold text-slate-400">/ 100</span>
             <span className="text-xs font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 ml-auto">
               Healthy
@@ -112,17 +109,16 @@ export default function CommandCenter() {
           </Link>
         </div>
 
-        {/* Money & Cash Snapshot */}
-        <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-              <DollarSign className="w-4 h-4 text-emerald-600" /> Cash & Working Capital
+              <DollarSign className="w-4 h-4 text-emerald-600 shrink-0" /> Cash & Working Capital
             </span>
             <span className="text-[10px] text-slate-400 font-medium">Current Balance</span>
           </div>
 
           <div className="my-2">
-            <div className="text-3xl font-black text-slate-900">₹{twin.money.cash_balance.toLocaleString('en-IN')}</div>
+            <div className="text-2xl sm:text-3xl font-black text-slate-900">₹{twin.money.cash_balance.toLocaleString('en-IN')}</div>
             <div className="text-xs text-slate-500 mt-1">
               Net Working Capital: <span className="text-emerald-700 font-extrabold">₹{twin.money.net_working_capital.toLocaleString('en-IN')}</span>
             </div>
@@ -144,11 +140,10 @@ export default function CommandCenter() {
           </Link>
         </div>
 
-        {/* Active Risk Alerts */}
-        <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-              <AlertTriangle className="w-4 h-4 text-amber-600" /> Active Risk Flags
+              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" /> Active Risk Flags
             </span>
             <span className="text-[10px] bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 rounded font-bold">
               {risks.length} Requires Review
@@ -170,8 +165,7 @@ export default function CommandCenter() {
         </div>
       </div>
 
-      {/* Module Shortcuts Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {[
           { label: 'Time Machine', desc: '90-Day Cash Horizon', href: '/dashboard/time-machine', icon: LineChart },
           { label: 'Scenario Simulator', desc: 'Run What-If Models', href: '/dashboard/scenarios', icon: Layers },
@@ -199,3 +193,4 @@ export default function CommandCenter() {
     </div>
   );
 }
+

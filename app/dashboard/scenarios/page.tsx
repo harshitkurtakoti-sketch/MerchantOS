@@ -37,7 +37,7 @@ export default function ScenariosPage() {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto font-sans">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-black text-slate-900 flex items-center gap-2">
             <Layers className="w-6 h-6 text-emerald-600" /> Scenario / What-If Engine
@@ -62,7 +62,7 @@ export default function ScenariosPage() {
         </button>
       </div>
 
-      {/* Assumptions Grid */}
+
       <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-6">
         <h2 className="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Adjustable Decision Assumptions</h2>
 
@@ -117,7 +117,7 @@ export default function ScenariosPage() {
         </div>
       </div>
 
-      {/* Warnings & Risk Level Callout */}
+
       {res?.warning_notes && res.warning_notes.length > 0 && (
         <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 space-y-1 shadow-xs">
           {res.warning_notes.map((w, i) => (
@@ -129,7 +129,7 @@ export default function ScenariosPage() {
         </div>
       )}
 
-      {/* Side-by-Side Comparison Table */}
+
       <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-4">
         <div className="flex items-center justify-between">
           <span className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Deterministic Propagated Impact Matrix</span>

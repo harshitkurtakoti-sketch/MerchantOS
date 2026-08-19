@@ -72,7 +72,8 @@ export default function RiskGraphPage() {
               )}
             </div>
 
-            {/* Evidence Panel */}
+
+
             <div className="p-4 rounded-xl bg-slate-50/70 border border-slate-200/80 text-xs space-y-2">
               <div className="font-bold text-slate-800 flex items-center gap-1.5">
                 <FileText className="w-3.5 h-3.5 text-amber-600" /> Audit Evidence & Baseline Comparison:

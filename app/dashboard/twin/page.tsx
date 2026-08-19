@@ -33,7 +33,7 @@ export default function DigitalTwinPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Money State */}
+
         <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-4">
           <div className="flex items-center gap-2 text-xs font-extrabold text-emerald-700 uppercase tracking-wider">
             <DollarSign className="w-4 h-4 text-emerald-600" /> Money Model
@@ -58,7 +58,7 @@ export default function DigitalTwinPage() {
           </div>
         </div>
 
-        {/* Commerce State */}
+
         <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-4">
           <div className="flex items-center gap-2 text-xs font-extrabold text-teal-700 uppercase tracking-wider">
             <ShoppingBag className="w-4 h-4 text-teal-600" /> Commerce Model
@@ -83,7 +83,7 @@ export default function DigitalTwinPage() {
           </div>
         </div>
 
-        {/* Behavior State */}
+
         <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-4">
           <div className="flex items-center gap-2 text-xs font-extrabold text-cyan-700 uppercase tracking-wider">
             <Activity className="w-4 h-4 text-cyan-600" /> Behavior Model

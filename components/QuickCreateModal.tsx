@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, X, DollarSign, Package, FileText, CheckCircle2 } from 'lucide-react';
+import { Plus, X, CheckCircle2 } from 'lucide-react';
 
 interface QuickCreateModalProps {
   businessId?: string;
@@ -15,21 +15,18 @@ export function QuickCreateModal({ businessId = 'biz_rukmini_store', onSuccess, 
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
 
-  // Transaction form state
   const [txnType, setTxnType] = useState<'income' | 'expense'>('income');
   const [txnCategory, setTxnCategory] = useState('Sales');
   const [txnAmount, setTxnAmount] = useState('');
   const [txnCounterparty, setTxnCounterparty] = useState('');
   const [txnPaymentMethod, setTxnPaymentMethod] = useState('upi');
 
-  // Product form state
   const [prodName, setProdName] = useState('');
   const [prodSku, setProdSku] = useState('');
   const [prodCategory, setProdCategory] = useState('Staples');
   const [prodCostPrice, setProdCostPrice] = useState('');
   const [prodSellingPrice, setProdSellingPrice] = useState('');
 
-  // Receivable form state
   const [recType, setRecType] = useState<'receivable' | 'payable'>('receivable');
   const [recInvoiceRef, setRecInvoiceRef] = useState('');
   const [recAmount, setRecAmount] = useState('');
@@ -133,34 +130,33 @@ export function QuickCreateModal({ businessId = 'biz_rukmini_store', onSuccess, 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs font-sans">
-      <div className="bg-white border border-slate-200/90 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs font-sans overflow-y-auto">
+      <div className="bg-white border border-slate-200/90 rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-5 animate-in fade-in zoom-in-95 duration-150 my-auto">
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-          <div className="flex items-center gap-2 text-slate-900 font-extrabold text-base">
-            <Plus className="w-5 h-5 text-emerald-600" /> Manual Business Data Entry
+          <div className="flex items-center gap-2 text-slate-900 font-extrabold text-sm sm:text-base">
+            <Plus className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 shrink-0" /> Manual Business Data Entry
           </div>
           <button onClick={onClose} className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Tab switcher */}
-        <div className="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-xl text-xs font-bold">
+        <div className="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-xl text-[11px] sm:text-xs font-bold">
           <button
             onClick={() => setActiveTab('transaction')}
-            className={`py-2 rounded-lg transition-all ${activeTab === 'transaction' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
+            className={`py-1.5 sm:py-2 rounded-lg transition-all ${activeTab === 'transaction' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
           >
             Transaction
           </button>
           <button
             onClick={() => setActiveTab('product')}
-            className={`py-2 rounded-lg transition-all ${activeTab === 'product' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
+            className={`py-1.5 sm:py-2 rounded-lg transition-all ${activeTab === 'product' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
           >
             Product / SKU
           </button>
           <button
             onClick={() => setActiveTab('receivable')}
-            className={`py-2 rounded-lg transition-all ${activeTab === 'receivable' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
+            className={`py-1.5 sm:py-2 rounded-lg transition-all ${activeTab === 'receivable' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
           >
             Invoice / Due
           </button>
@@ -168,14 +164,13 @@ export function QuickCreateModal({ businessId = 'biz_rukmini_store', onSuccess, 
 
         {successMsg && (
           <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" /> {successMsg}
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" /> {successMsg}
           </div>
         )}
 
-        {/* Form: Transaction */}
         {activeTab === 'transaction' && (
-          <form onSubmit={handleSubmitTransaction} className="space-y-4 text-xs">
-            <div className="grid grid-cols-2 gap-3">
+          <form onSubmit={handleSubmitTransaction} className="space-y-3 sm:space-y-4 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-slate-700 font-semibold mb-1">Type</label>
                 <select value={txnType} onChange={e => setTxnType(e.target.value as any)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-medium">
@@ -190,7 +185,7 @@ export function QuickCreateModal({ businessId = 'biz_rukmini_store', onSuccess, 
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-slate-700 font-semibold mb-1">Category</label>
                 <input type="text" value={txnCategory} onChange={e => setTxnCategory(e.target.value)} placeholder="e.g. Sales, Rent, Stock" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-medium" />
@@ -213,21 +208,20 @@ export function QuickCreateModal({ businessId = 'biz_rukmini_store', onSuccess, 
               <input type="text" value={txnCounterparty} onChange={e => setTxnCounterparty(e.target.value)} placeholder="e.g. Apex FMCG, Walk-in Customer" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-medium" />
             </div>
 
-            <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-all shadow-md shadow-emerald-600/20">
+            <button type="submit" disabled={loading} className="w-full py-2.5 sm:py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-all shadow-md shadow-emerald-600/20">
               {loading ? 'Adding Transaction...' : 'Add Real Transaction Entry'}
             </button>
           </form>
         )}
 
-        {/* Form: Product */}
         {activeTab === 'product' && (
-          <form onSubmit={handleSubmitProduct} className="space-y-4 text-xs">
+          <form onSubmit={handleSubmitProduct} className="space-y-3 sm:space-y-4 text-xs">
             <div>
               <label className="block text-slate-700 font-semibold mb-1">Product Name</label>
               <input type="text" value={prodName} onChange={e => setProdName(e.target.value)} placeholder="e.g. Organic Almond Milk 1L" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-medium" required />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-slate-700 font-semibold mb-1">SKU Code</label>
                 <input type="text" value={prodSku} onChange={e => setProdSku(e.target.value)} placeholder="e.g. MILK-1L-ORG" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-medium" />
@@ -239,7 +233,7 @@ export function QuickCreateModal({ businessId = 'biz_rukmini_store', onSuccess, 
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-slate-700 font-semibold mb-1">Cost Price (₹)</label>
                 <input type="number" value={prodCostPrice} onChange={e => setProdCostPrice(e.target.value)} placeholder="e.g. 180" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-medium" />
@@ -251,16 +245,15 @@ export function QuickCreateModal({ businessId = 'biz_rukmini_store', onSuccess, 
               </div>
             </div>
 
-            <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-all shadow-md shadow-emerald-600/20">
+            <button type="submit" disabled={loading} className="w-full py-2.5 sm:py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-all shadow-md shadow-emerald-600/20">
               {loading ? 'Adding Product...' : 'Add Real Product Master Entry'}
             </button>
           </form>
         )}
 
-        {/* Form: Receivable / Payable */}
         {activeTab === 'receivable' && (
-          <form onSubmit={handleSubmitReceivable} className="space-y-4 text-xs">
-            <div className="grid grid-cols-2 gap-3">
+          <form onSubmit={handleSubmitReceivable} className="space-y-3 sm:space-y-4 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-slate-700 font-semibold mb-1">Type</label>
                 <select value={recType} onChange={e => setRecType(e.target.value as any)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-medium">
@@ -275,7 +268,7 @@ export function QuickCreateModal({ businessId = 'biz_rukmini_store', onSuccess, 
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-slate-700 font-semibold mb-1">Amount (₹)</label>
                 <input type="number" value={recAmount} onChange={e => setRecAmount(e.target.value)} placeholder="e.g. 45000" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-medium" required />
@@ -292,7 +285,7 @@ export function QuickCreateModal({ businessId = 'biz_rukmini_store', onSuccess, 
               <input type="date" value={recDueDate} onChange={e => setRecDueDate(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-medium" />
             </div>
 
-            <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-all shadow-md shadow-emerald-600/20">
+            <button type="submit" disabled={loading} className="w-full py-2.5 sm:py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-all shadow-md shadow-emerald-600/20">
               {loading ? 'Logging Due Entry...' : 'Log Invoice Entry'}
             </button>
           </form>
@@ -301,3 +294,4 @@ export function QuickCreateModal({ businessId = 'biz_rukmini_store', onSuccess, 
     </div>
   );
 }
+

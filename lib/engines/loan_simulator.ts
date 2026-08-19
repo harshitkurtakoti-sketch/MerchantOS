@@ -5,7 +5,7 @@ export interface LoanScenarioResult {
   scenario_name: string;
   description: string;
   monthly_emi: number;
-  repayment_pressure_pct: number; // EMI / monthly cash flow
+  repayment_pressure_pct: number;
   break_even_month: number;
   base_case: ScenarioResultSnapshot;
   best_case: ScenarioResultSnapshot;
@@ -15,9 +15,9 @@ export interface LoanScenarioResult {
 
 export function runReverseLoanSimulation(
   businessId: string,
-  loanAmount: number = 500000, // ₹5 Lakhs default
-  interestRatePct: number = 14.0, // 14% p.a default
-  tenureMonths: number = 12 // 12 months default
+  loanAmount: number = 500000,
+  interestRatePct: number = 14.0,
+  tenureMonths: number = 12
 ): {
   loan_amount: number;
   interest_rate: number;
@@ -34,13 +34,12 @@ export function runReverseLoanSimulation(
   const totalRepayment = monthlyEmi * tenureMonths;
   const totalInterest = totalRepayment - loanAmount;
 
-  // Scenario A: Inventory Expansion
   const invBase = runDeterministicScenario(businessId, {
     loan_amount: loanAmount,
     interest_rate_pct: interestRatePct,
     repayment_months: tenureMonths,
     inventory_purchase_amount: loanAmount,
-    sales_change_pct: 12, // 12% sales increase from expanded stock
+    sales_change_pct: 12,
   });
   const invBest = runDeterministicScenario(businessId, {
     loan_amount: loanAmount,
@@ -57,12 +56,11 @@ export function runReverseLoanSimulation(
     sales_change_pct: -5,
   });
 
-  // Scenario B: Marketing Push
   const mktgBase = runDeterministicScenario(businessId, {
     loan_amount: loanAmount,
     interest_rate_pct: interestRatePct,
     repayment_months: tenureMonths,
-    marketing_spend: loanAmount / 3, // spend over 3 months
+    marketing_spend: loanAmount / 3,
     demand_change_pct: 18,
   });
   const mktgBest = runDeterministicScenario(businessId, {
@@ -80,7 +78,6 @@ export function runReverseLoanSimulation(
     demand_change_pct: 2,
   });
 
-  // Scenario C: Emergency Cash Smoothing
   const emergBase = runDeterministicScenario(businessId, {
     loan_amount: loanAmount,
     interest_rate_pct: interestRatePct,
@@ -138,3 +135,4 @@ export function runReverseLoanSimulation(
     scenarios,
   };
 }
+

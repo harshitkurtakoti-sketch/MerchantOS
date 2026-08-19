@@ -39,7 +39,7 @@ export default function LoanSimulatorPage() {
         </p>
       </div>
 
-      {/* Inputs Bar */}
+
       <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-4">
         <h2 className="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Loan Parameters</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -80,7 +80,7 @@ export default function LoanSimulatorPage() {
         )}
       </div>
 
-      {/* 3 Allocation Scenarios Comparison Grid */}
+
       {simRes?.scenarios && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {simRes.scenarios.map((sc: LoanScenarioResult, idx: number) => (

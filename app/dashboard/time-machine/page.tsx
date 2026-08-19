@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Area, ComposedChart, ReferenceLine } from 'recharts';
+import { ResponsiveContainer, XAxis, YAxis, Tooltip, Area, ComposedChart, ReferenceLine } from 'recharts';
 import { LineChart as LineIcon, AlertTriangle, RefreshCw, Sliders } from 'lucide-react';
 
 export default function TimeMachinePage() {
@@ -38,24 +38,23 @@ export default function TimeMachinePage() {
   }, [horizon, salesDelta, inventoryPurchase, priceDelta]);
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto font-sans">
+    <div className="space-y-4 sm:space-y-6 max-w-7xl mx-auto font-sans">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 flex items-center gap-2">
-            <LineIcon className="w-6 h-6 text-emerald-600" /> Financial Time Machine
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
+            <LineIcon className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 shrink-0" /> Financial Time Machine
           </h1>
           <p className="text-xs text-slate-500 mt-1">
             Simulate future cash trajectories. Move assumption sliders to see cash-stress dips recompute live.
           </p>
         </div>
 
-        {/* Horizon Presets */}
-        <div className="flex items-center gap-1.5 bg-slate-100 border border-slate-200/80 p-1 rounded-xl self-start md:self-auto">
+        <div className="flex items-center gap-1 bg-slate-100 border border-slate-200/80 p-1 rounded-xl self-start md:self-auto overflow-x-auto max-w-full">
           {[30, 60, 90, 180].map(h => (
             <button
               key={h}
               onClick={() => setHorizon(h)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0 ${
                 horizon === h ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -65,12 +64,11 @@ export default function TimeMachinePage() {
         </div>
       </div>
 
-      {/* Cash Stress Alert Warning */}
       {forecast?.has_cash_stress && (
         <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 flex items-start gap-3 shadow-xs">
           <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
           <div>
-            <div className="text-sm font-extrabold text-rose-900">Cash Stress Warning Detected</div>
+            <div className="text-xs sm:text-sm font-extrabold text-rose-900">Cash Stress Warning Detected</div>
             <div className="text-xs text-rose-800 mt-0.5">
               Under these assumptions, projected cash drops below your safety threshold (₹{forecast.safety_threshold.toLocaleString('en-IN')}) on {forecast.cash_stress_dates.length} days.
             </div>
@@ -78,14 +76,13 @@ export default function TimeMachinePage() {
         </div>
       )}
 
-      {/* Main Chart Card */}
-      <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-4">
-        <div className="flex items-center justify-between">
+      <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1">
           <span className="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Projected Cash Trajectory (₹ INR)</span>
           <span className="text-xs text-slate-500 font-semibold">Safety Floor: ₹{forecast?.safety_threshold?.toLocaleString('en-IN')}</span>
         </div>
 
-        <div className="h-80 w-full pt-4">
+        <div className="h-64 sm:h-80 w-full pt-2 sm:pt-4">
           {forecast?.points ? (
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={forecast.points}>
@@ -112,11 +109,10 @@ export default function TimeMachinePage() {
         </div>
       </div>
 
-      {/* Assumption Sliders */}
-      <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-6">
+      <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-5 sm:space-y-6">
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <div className="flex items-center gap-2 text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-            <Sliders className="w-4 h-4 text-emerald-600" /> Interactive Time Machine Sliders
+            <Sliders className="w-4 h-4 text-emerald-600 shrink-0" /> Interactive Time Machine Sliders
           </div>
           <button
             onClick={() => {
@@ -124,14 +120,13 @@ export default function TimeMachinePage() {
               setInventoryPurchase(0);
               setPriceDelta(0);
             }}
-            className="text-xs text-slate-500 hover:text-slate-900 font-semibold flex items-center gap-1"
+            className="text-xs text-slate-500 hover:text-slate-900 font-semibold flex items-center gap-1 shrink-0"
           >
-            <RefreshCw className="w-3 h-3" /> Reset Sliders
+            <RefreshCw className="w-3 h-3" /> Reset
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Sales Change Slider */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
               <span className="text-slate-700 font-semibold">Sales Change (%)</span>
@@ -149,7 +144,6 @@ export default function TimeMachinePage() {
             />
           </div>
 
-          {/* Inventory Purchase Slider */}
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
               <span className="text-slate-700 font-semibold">Inventory Purchase (₹)</span>
@@ -166,7 +160,6 @@ export default function TimeMachinePage() {
             />
           </div>
 
-          {/* Price Change Slider */}
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
               <span className="text-slate-700 font-semibold">Price Change (%)</span>
@@ -188,3 +181,4 @@ export default function TimeMachinePage() {
     </div>
   );
 }
+

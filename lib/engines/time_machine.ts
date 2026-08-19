@@ -25,11 +25,10 @@ export function computeTimeMachineForecast(
   const initialPurchaseOutflow = assumptions.inventory_purchase_amount || 0;
   const loanInflow = assumptions.loan_amount || 0;
 
-  // Baseline daily organic flow from scenario net profit
   const dailyOrganicRevenue = (scenarioResult.revenue.scenario / 90);
   const dailyOrganicExpense = ((scenarioResult.revenue.scenario - scenarioResult.net_profit.scenario) / 90);
 
-  const safetyThreshold = 65000; // ₹65,000 safety threshold
+  const safetyThreshold = 65000;
   let runningCash = startCash + loanInflow - initialPurchaseOutflow;
   const points: ForecastPoint[] = [];
   const cashStressDates: string[] = [];
@@ -40,7 +39,6 @@ export function computeTimeMachineForecast(
     const currentDate = new Date(startDate.getTime() + day * 86400000);
     const dateStr = currentDate.toISOString().split('T')[0];
 
-    // Scheduled payables / receivables on specific future days
     let dayPayables = 0;
     let dayReceivables = 0;
     let note: string | undefined;
@@ -60,7 +58,6 @@ export function computeTimeMachineForecast(
       note = 'Quarterly tax & bulk restocking payables';
     }
 
-    // Weekly seasonality variance (spikes on weekend)
     const dayOfWeek = currentDate.getDay();
     const weekendMultiplier = dayOfWeek === 0 || dayOfWeek === 6 ? 1.35 : 0.88;
     const dayOrganicRev = Math.round(dailyOrganicRevenue * weekendMultiplier);
@@ -68,8 +65,7 @@ export function computeTimeMachineForecast(
 
     runningCash += (dayOrganicRev - dayOrganicExp + dayReceivables - dayPayables);
 
-    // Confidence band widens as horizon extends
-    const uncertaintyMargin = 0.03 + (day / horizonDays) * 0.12; // 3% -> 15%
+    const uncertaintyMargin = 0.03 + (day / horizonDays) * 0.12;
     const lowerBound = Math.round(runningCash * (1 - uncertaintyMargin));
     const upperBound = Math.round(runningCash * (1 + uncertaintyMargin));
 
@@ -100,3 +96,4 @@ export function computeTimeMachineForecast(
     points,
   };
 }
+

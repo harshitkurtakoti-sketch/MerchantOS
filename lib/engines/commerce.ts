@@ -32,9 +32,9 @@ export function computeCommerceIntelligence(businessId: string): ProductMarginSu
     const paymentFeePctMap: Record<string, number> = {
       upi: 0.0,
       cash: 0.0,
-      card: 0.018, // 1.8%
+      card: 0.018,
       bank_transfer: 0.0,
-      cod: 0.025, // 2.5%
+      cod: 0.025,
       wallet: 0.015,
     };
 
@@ -55,12 +55,11 @@ export function computeCommerceIntelligence(businessId: string): ProductMarginSu
     const avgSellingPrice = product.selling_price;
     const avgDiscount = totalUnits > 0 ? totalDiscount / totalUnits : 0;
     const avgPaymentFee = totalUnits > 0 ? totalPaymentFees / totalUnits : avgSellingPrice * 0.01;
-    const packagingCost = 8.0; // ₹8 standard packaging
+    const packagingCost = 8.0;
 
-    // High return costs for fragile/gourmet goods or specific loss-making SKUs
     const returnRatePct = product.sku.includes('ROYAL') || product.sku.includes('OLIVE') ? 0.08 : 0.02;
     const avgReturnCost = returnRatePct * (product.cost_price + 40);
-    const avgDeliveryCost = product.sku.includes('ROYAL') ? 65 : 25; // Heavy grain logistics
+    const avgDeliveryCost = product.sku.includes('ROYAL') ? 65 : 25;
 
     const trueMargin = avgSellingPrice - product.cost_price - avgPaymentFee - avgDeliveryCost - avgReturnCost - avgDiscount - packagingCost;
     const marginPct = avgSellingPrice > 0 ? (trueMargin / avgSellingPrice) * 100 : 0;
@@ -101,6 +100,6 @@ export function computeCommerceIntelligence(businessId: string): ProductMarginSu
     };
   });
 
-  // Sort by highest total actual contribution descending
   return summaries.sort((a, b) => b.total_actual_contribution - a.total_actual_contribution);
 }
+

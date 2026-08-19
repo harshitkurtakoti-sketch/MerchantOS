@@ -1,4 +1,3 @@
-import { store } from '../db/mock_store';
 import { getDigitalTwinState } from './digital_twin';
 import { ScenarioAssumptions, ScenarioResultSnapshot } from '../db/types';
 
@@ -10,15 +9,13 @@ export function runDeterministicScenario(
   const currentMoney = twin.money;
   const currentCommerce = twin.commerce;
 
-  // Extract base current values
-  const baseRevenue = currentMoney.total_revenue_ytd / 6; // monthly average
-  const baseExpenses = currentMoney.total_expenses_ytd / 6; // monthly average
+  const baseRevenue = currentMoney.total_revenue_ytd / 6;
+  const baseExpenses = currentMoney.total_expenses_ytd / 6;
   const baseCash = currentMoney.cash_balance;
   const baseReceivables = currentMoney.open_receivables;
   const basePayables = currentMoney.open_payables;
   const baseInventory = currentCommerce.total_inventory_value;
 
-  // 1. Calculate Assumption Deltas
   const salesChangePct = assumptions.sales_change_pct || 0;
   const priceChangePct = assumptions.price_change_pct || 0;
   const invPurchaseAmt = assumptions.inventory_purchase_amount || 0;
@@ -26,28 +23,23 @@ export function runDeterministicScenario(
   const mktgSpend = assumptions.marketing_spend || 0;
   const opexChangePct = assumptions.opex_change_pct || 0;
   const loanAmt = assumptions.loan_amount || 0;
-  const interestRate = assumptions.interest_rate_pct || 14; // 14% p.a default
+  const interestRate = assumptions.interest_rate_pct || 14;
   const loanTenureMonths = assumptions.repayment_months || 12;
 
-  // Demand Uplift from Marketing Spend (conservative 1% sales increase per ₹15,000 marketing spend)
   const mktgDemandUplift = mktgSpend > 0 ? (mktgSpend / 15000) * 1.5 : 0;
   const netSalesPctDelta = salesChangePct + (assumptions.demand_change_pct || 0) + mktgDemandUplift;
 
-  // Price Elasticity effect: if price goes up 10%, demand drops ~5% unless specified
   const elasticityVolumeDelta = priceChangePct > 0 ? -0.5 * priceChangePct : 0;
   const effectiveVolumeMultiplier = 1 + (netSalesPctDelta + elasticityVolumeDelta) / 100;
   const effectivePriceMultiplier = (1 + priceChangePct / 100) * (1 - discountPct / 100);
 
-  // 2. Projected Monthly Revenue & Profit
   const scenarioMonthlyRevenue = Math.max(0, baseRevenue * effectiveVolumeMultiplier * effectivePriceMultiplier);
-  const baseCogs = baseRevenue * 0.72; // ~72% COGS in retail staples
+  const baseCogs = baseRevenue * 0.72;
   const scenarioCogs = baseCogs * effectiveVolumeMultiplier;
 
   const scenarioGrossProfit = scenarioMonthlyRevenue - scenarioCogs;
-
   const scenarioBaseOpex = baseExpenses * 0.28 * (1 + opexChangePct / 100) + mktgSpend;
   
-  // Loan EMI calculation (P * r * (1+r)^n / ((1+r)^n - 1))
   let monthlyLoanEmi = 0;
   if (loanAmt > 0 && loanTenureMonths > 0) {
     const monthlyRate = interestRate / 100 / 12;
@@ -57,10 +49,9 @@ export function runDeterministicScenario(
   const scenarioNetProfit = scenarioGrossProfit - scenarioBaseOpex - monthlyLoanEmi;
   const scenarioMarginPct = scenarioMonthlyRevenue > 0 ? (scenarioNetProfit / scenarioMonthlyRevenue) * 100 : 0;
 
-  // 3. 90-Day Cash Trajectory Simulation
   const horizonDays = 90;
   const dailyOrganicNetCash = (scenarioNetProfit * 3) / horizonDays;
-  const safetyThresholdCash = Math.max(50000, scenarioBaseOpex * 0.5); // 15 days opex safety buffer
+  const safetyThresholdCash = Math.max(50000, scenarioBaseOpex * 0.5);
 
   let currentSimCash = baseCash + loanAmt - invPurchaseAmt;
   let minSimCash = currentSimCash;
@@ -69,9 +60,8 @@ export function runDeterministicScenario(
   for (let day = 1; day <= horizonDays; day++) {
     currentSimCash += dailyOrganicNetCash;
 
-    // Simulate scheduled payables / receivables spikes
-    if (day === 14) currentSimCash -= basePayables * 0.6; // major supplier payment due
-    if (day === 25) currentSimCash += baseReceivables * 0.7; // major customer payment collected
+    if (day === 14) currentSimCash -= basePayables * 0.6;
+    if (day === 25) currentSimCash += baseReceivables * 0.7;
 
     if (currentSimCash < minSimCash) {
       minSimCash = currentSimCash;
@@ -87,7 +77,6 @@ export function runDeterministicScenario(
   const scenarioReceivables = baseReceivables * (assumptions.customer_credit_days ? assumptions.customer_credit_days / 30 : 1);
   const scenarioPayables = basePayables * (assumptions.supplier_terms_days ? assumptions.supplier_terms_days / 30 : 1);
 
-  // 4. Determine Risk Level
   let riskLevel: 'Low' | 'Medium' | 'High' = 'Low';
   const warningNotes: string[] = [];
 
@@ -128,3 +117,4 @@ function formatDiff(current: number, scenario: number) {
   const pct_change = c !== 0 ? Math.round((diff / Math.abs(c)) * 1000) / 10 : 0;
   return { current: c, scenario: s, diff, pct_change };
 }
+

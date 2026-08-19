@@ -35,7 +35,7 @@ export default function FinancialHealthPage() {
         </p>
       </div>
 
-      {/* Main Score Hero */}
+
       <div className="p-8 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex flex-col md:flex-row items-center justify-between gap-8">
         <div className="flex items-center gap-6">
           <div className="relative w-32 h-32 flex items-center justify-center rounded-full bg-emerald-50/50 border-4 border-emerald-500 shadow-lg shadow-emerald-500/10">
@@ -72,7 +72,7 @@ export default function FinancialHealthPage() {
         </div>
       </div>
 
-      {/* Sub-Score Breakdown Cards */}
+
       <div className="space-y-4">
         <h3 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Weighted Sub-Score Breakdown</h3>
 

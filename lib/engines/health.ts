@@ -25,7 +25,6 @@ export function computeFinancialHealth(businessId: string): HealthScoreSnapshot 
     };
   }
 
-  // 1. Cash Stability Score (Target: 30 days buffer = 100 points)
   const totalIncome = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
   const totalExpense = transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
   const netCash = Math.max(0, totalIncome - totalExpense);
@@ -33,21 +32,17 @@ export function computeFinancialHealth(businessId: string): HealthScoreSnapshot 
   const cashBufferDays = netCash / dailyOpex;
   const cash_stability = Math.min(100, Math.max(0, Math.round((cashBufferDays / 30) * 100)));
 
-  // 2. Profitability Score (Net Margin target: 15% = 100 points)
   const marginPct = totalIncome > 0 ? ((totalIncome - totalExpense) / totalIncome) * 100 : 0;
   const profitability = Math.min(100, Math.max(0, Math.round((marginPct / 15) * 100)));
 
-  // 3. Customer Payment Reliability Score (% On-time receivables)
   const totalRec = receivables.length;
   const overdueRec = receivables.filter(r => r.status === 'overdue').length;
   const reliabilityPct = totalRec > 0 ? ((totalRec - overdueRec) / totalRec) * 100 : 85;
   const customer_payment_reliability = Math.min(100, Math.max(0, Math.round(reliabilityPct)));
 
-  // 4. Inventory Efficiency Score (Turnover & stock level balance)
   const overstockedItems = products.filter(p => p.sku.includes('BRASS') || p.sku.includes('GIFT')).length;
   const inventory_efficiency = Math.max(40, 90 - overstockedItems * 15);
 
-  // 5. Supplier Dependency Score (Inverted: lower concentration = higher score)
   const supplierSpendMap: Record<string, number> = {};
   let totalSupplierSpend = 0;
   transactions.filter(t => t.type === 'expense' && t.category.includes('Inventory')).forEach(t => {
@@ -60,10 +55,8 @@ export function computeFinancialHealth(businessId: string): HealthScoreSnapshot 
     const pct = (amt / Math.max(1, totalSupplierSpend)) * 100;
     if (pct > maxConcentration) maxConcentration = pct;
   });
-  // Invert: 20% max concentration -> 100 score; 60% concentration -> 50 score
   const supplier_dependency = Math.min(100, Math.max(20, Math.round(120 - maxConcentration)));
 
-  // Weighted Total
   const sub_scores: HealthSubScores = {
     cash_stability,
     profitability,
@@ -94,3 +87,4 @@ export function computeFinancialHealth(businessId: string): HealthScoreSnapshot 
   store.health_scores.push(snapshot);
   return snapshot;
 }
+

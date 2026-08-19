@@ -12,8 +12,8 @@ export function computeFinanceReadiness(businessId: string): FinanceReadinessSna
     profitability: healthSub.profitability,
     receivables_quality: healthSub.customer_payment_reliability,
     inventory_health: healthSub.inventory_efficiency,
-    growth_trend: 82, // Stable MoM growth baseline
-    debt_burden: 88, // Low existing debt leverage
+    growth_trend: 82,
+    debt_burden: 88,
     payment_behavior: healthSub.supplier_dependency,
   };
 
@@ -28,7 +28,6 @@ export function computeFinanceReadiness(businessId: string): FinanceReadinessSna
     0.05 * sub_scores.payment_behavior
   );
 
-  // Mandatory Language Compliance per PRD Section 12.2
   const qualifying_statement =
     'The business appears financially prepared for additional working-capital financing, subject to lender-specific underwriting.';
 
@@ -46,8 +45,8 @@ export function computeFinanceReadiness(businessId: string): FinanceReadinessSna
 }
 
 function sanitizeApprovalText(text: string): string {
-  // Enforce rule PRD Section 12.2: Never say "approved" or "you qualify"
   return text
     .replace(/\bapproved\b/gi, 'appears prepared')
     .replace(/\byou qualify\b/gi, 'meets initial readiness indicators');
 }
+

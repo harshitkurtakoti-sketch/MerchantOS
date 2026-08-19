@@ -4,7 +4,6 @@ import Anthropic from '@anthropic-ai/sdk';
 import { AI_TOOLS_DEFINITIONS, executeEngineTool } from '@/lib/ai/tools';
 import { validateAndAttributeResponse } from '@/lib/ai/validator';
 
-// Groq format tool definitions
 const GROQ_TOOLS = AI_TOOLS_DEFINITIONS.map(t => ({
   type: 'function' as const,
   function: {
@@ -36,7 +35,6 @@ Every number you mention must be directly sourced from a tool result.
 NEVER use the word "fraud" unqualified (use "unusual pattern" or "review recommended").
 NEVER say "approved" or "you qualify" for loans (use "appears financially prepared for additional working-capital financing, subject to lender underwriting").`;
 
-    // 1. Groq API Key Execution (groq/compound model)
     if (hasGroqKey) {
       const groq = new Groq({ apiKey: groqKey! });
       const messages: any[] = [
@@ -109,11 +107,9 @@ NEVER say "approved" or "you qualify" for loans (use "appears financially prepar
         }
       } catch (groqErr: any) {
         console.error('Groq Execution Error:', groqErr);
-        // Fallthrough to deterministic engine if model error occurs
       }
     }
 
-    // 2. Anthropic API Key Execution (Claude 3.5 Sonnet)
     if (hasAnthropicKey) {
       const anthropic = new Anthropic({ apiKey: anthropicKey! });
       const messages: any[] = [{ role: 'user', content: question }];
@@ -183,7 +179,6 @@ NEVER say "approved" or "you qualify" for loans (use "appears financially prepar
       }
     }
 
-    // 3. Fallback Deterministic Engine Orchestration
     const qLower = question.toLowerCase();
     const executedTools: Array<{ tool: string; result: any; source_refs: string[] }> = [];
 
@@ -274,3 +269,4 @@ NEVER say "approved" or "you qualify" for loans (use "appears financially prepar
     return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 });
   }
 }
+

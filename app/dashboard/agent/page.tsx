@@ -81,40 +81,38 @@ function AgentPageContent() {
   }, [initialQ]);
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 flex flex-col h-[calc(100vh-6rem)] font-sans">
-      <div className="flex items-center justify-between">
+    <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6 flex flex-col h-[calc(100vh-7.5rem)] sm:h-[calc(100vh-6rem)] font-sans">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
         <div>
-          <h1 className="text-xl font-black text-slate-900 flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-emerald-600" /> AI Decision Agent
+          <h1 className="text-lg sm:text-xl font-black text-slate-900 flex items-center gap-2">
+            <MessageSquare className="w-5 h-5 text-emerald-600 shrink-0" /> AI Decision Agent
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
             Tool-calling financial decision co-pilot. All answers are backed by deterministic engine calculations.
           </p>
         </div>
-        <span className="text-[11px] bg-emerald-50 border border-emerald-200 text-emerald-700 px-2.5 py-1 rounded-full font-extrabold">
+        <span className="text-[10px] sm:text-[11px] bg-emerald-50 border border-emerald-200 text-emerald-700 px-2.5 py-1 rounded-full font-extrabold shrink-0">
           Strict Evidence Guardrails Active
         </span>
       </div>
 
-      {/* Suggested Quick Questions */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 shrink-0">
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 shrink-0 scrollbar-none">
         {SUGGESTIONS.map((s, i) => (
           <button
             key={i}
             onClick={() => handleSend(s)}
-            className="text-xs bg-white border border-slate-200 hover:border-emerald-500/50 text-slate-700 hover:text-slate-900 px-3 py-1.5 rounded-xl whitespace-nowrap transition-colors shadow-2xs font-medium"
+            className="text-xs bg-white border border-slate-200 hover:border-emerald-500/50 text-slate-700 hover:text-slate-900 px-3 py-1.5 rounded-xl whitespace-nowrap transition-colors shadow-2xs font-medium shrink-0"
           >
             {s}
           </button>
         ))}
       </div>
 
-      {/* Chat Messages Log */}
-      <div className="flex-1 overflow-y-auto space-y-4 p-4 rounded-2xl bg-slate-50/70 border border-slate-200/80 shadow-inner">
+      <div className="flex-1 overflow-y-auto space-y-4 p-3 sm:p-4 rounded-2xl bg-slate-50/70 border border-slate-200/80 shadow-inner">
         {messages.map(m => (
           <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div
-              className={`max-w-2xl rounded-2xl p-4 text-xs space-y-3 shadow-2xs ${
+              className={`max-w-full sm:max-w-2xl rounded-2xl p-3 sm:p-4 text-xs space-y-3 shadow-2xs ${
                 m.role === 'user'
                   ? 'bg-slate-900 text-white font-medium'
                   : 'bg-white border border-slate-200/90 text-slate-800'
@@ -128,7 +126,6 @@ function AgentPageContent() {
                 </div>
               )}
 
-              {/* Evidence Panel Accordion */}
               {m.evidence && (
                 <div className="pt-2 border-t border-slate-100">
                   <button
@@ -163,15 +160,14 @@ function AgentPageContent() {
 
         {loading && (
           <div className="flex justify-start">
-            <div className="p-4 rounded-2xl bg-white border border-slate-200 text-xs text-slate-500 flex items-center gap-2 animate-pulse shadow-xs font-medium">
-              <Sparkles className="w-4 h-4 text-emerald-600 animate-spin" />
+            <div className="p-3 sm:p-4 rounded-2xl bg-white border border-slate-200 text-xs text-slate-500 flex items-center gap-2 animate-pulse shadow-xs font-medium">
+              <Sparkles className="w-4 h-4 text-emerald-600 animate-spin shrink-0" />
               Running deterministic tools & generating response...
             </div>
           </div>
         )}
       </div>
 
-      {/* Input Box */}
       <form
         onSubmit={e => {
           e.preventDefault();
@@ -184,12 +180,12 @@ function AgentPageContent() {
           value={input}
           onChange={e => setInput(e.target.value)}
           placeholder="Ask a decision question (e.g. Can I afford ₹3L inventory?)..."
-          className="flex-1 bg-white border border-slate-300 rounded-xl px-4 py-3 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition-all shadow-xs"
+          className="flex-1 bg-white border border-slate-300 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition-all shadow-xs"
         />
         <button
           type="submit"
           disabled={loading}
-          className="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-all flex items-center gap-1.5 shadow-md shadow-emerald-600/20"
+          className="px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-all flex items-center gap-1.5 shadow-md shadow-emerald-600/20 shrink-0"
         >
           Send <Send className="w-3.5 h-3.5" />
         </button>
@@ -205,3 +201,4 @@ export default function AgentPage() {
     </Suspense>
   );
 }
+
