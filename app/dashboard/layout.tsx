@@ -55,9 +55,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     <div className="flex flex-col h-full bg-white">
       <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between shrink-0">
         <Link href="/" className="flex items-center gap-2.5" onClick={() => setIsMobileNavOpen(false)}>
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center shadow-md shadow-emerald-600/20">
-            <Cpu className="w-4 h-4 text-white font-bold" />
-          </div>
+          <img
+            src="/merchantos_logo.png"
+            alt="MerchantOS Logo"
+            className="w-8 h-8 object-contain rounded-lg"
+          />
           <span className="font-extrabold text-lg tracking-tight text-slate-900">
             Merchant<span className="text-emerald-600">OS</span>
           </span>
