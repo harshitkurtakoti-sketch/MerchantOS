@@ -187,10 +187,64 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <main className="flex-1 p-3.5 sm:p-6 overflow-y-auto max-w-full">{children}</main>
+        <main className="flex-1 p-3.5 sm:p-6 overflow-y-auto max-w-full pb-20 md:pb-6">{children}</main>
+
+        {/* Mobile Phone Bottom Navigation Bar */}
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-lg px-2 py-1.5 flex items-center justify-around">
+          <Link
+            href="/dashboard"
+            className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all ${
+              pathname === '/dashboard' ? 'text-emerald-600 font-bold' : 'text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            <LayoutDashboard className="w-5 h-5" />
+            <span className="text-[10px] mt-0.5">Home</span>
+          </Link>
+
+          <Link
+            href="/dashboard/agent"
+            className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all ${
+              pathname === '/dashboard/agent' ? 'text-emerald-600 font-bold' : 'text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            <MessageSquare className="w-5 h-5" />
+            <span className="text-[10px] mt-0.5">Ask AI</span>
+          </Link>
+
+          <Link
+            href="/dashboard/import"
+            className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all ${
+              pathname === '/dashboard/import' ? 'text-emerald-600 font-bold' : 'text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            <Upload className="w-5 h-5" />
+            <span className="text-[10px] mt-0.5">OCR Capture</span>
+          </Link>
+
+          <Link
+            href="/dashboard/scenarios"
+            className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all ${
+              pathname === '/dashboard/scenarios' ? 'text-emerald-600 font-bold' : 'text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            <Layers className="w-5 h-5" />
+            <span className="text-[10px] mt-0.5">Simulate</span>
+          </Link>
+
+          <Link
+            href="/dashboard/health"
+            className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all ${
+              pathname === '/dashboard/health' ? 'text-emerald-600 font-bold' : 'text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            <HeartPulse className="w-5 h-5" />
+            <span className="text-[10px] mt-0.5">Health</span>
+          </Link>
+        </nav>
       </div>
     </div>
   );
 }
+
 
 

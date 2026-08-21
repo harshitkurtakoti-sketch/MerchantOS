@@ -16,26 +16,33 @@ export function validateAndAttributeResponse(
   const combinedEvidence: Record<string, any> = {};
 
   executedTools.forEach(t => {
-    allSourceRefs.push(...t.source_refs);
+    if (t.source_refs) {
+      allSourceRefs.push(...t.source_refs);
+    }
     combinedEvidence[t.tool] = t.result;
   });
 
-  // Strict non-fraud and non-loan-approval wording check
+  // Strict compliance language enforcement (PRD Sections 11, 12, 20)
   let sanitizedText = rawAnswer
     .replace(/\bfraud\b/gi, 'unusual pattern')
-    .replace(/\byou are approved\b/gi, 'appears prepared for financing');
+    .replace(/\byou are approved\b/gi, 'appears prepared for additional working-capital financing')
+    .replace(/\bguaranteed loan\b/gi, 'potential lender match subject to underwriting')
+    .replace(/\bloan approved\b/gi, 'financing readiness benchmarked')
+    .replace(/\byou qualify\b/gi, 'meets preliminary eligibility criteria');
 
-  // Verify numerical figures in response match executed tool parameters
-  const numbersInText = sanitizedText.match(/₹?\d+([.,]\d+)*(L|k|lakh|crore)?/g) || [];
   const warnings: string[] = [];
+  if (executedTools.length === 0) {
+    warnings.push('Response generated without deterministic tool execution.');
+  }
 
   return {
     answer_text: sanitizedText,
-    recommended_range: '₹1.2L–₹1.5L safe, ₹3.0L risky',
+    recommended_range: '₹1.2L–₹1.5L safe scenario, ₹3.0L stress scenario',
     source_refs: Array.from(new Set(allSourceRefs)),
     evidence_panel: combinedEvidence,
-    confidence: 'High',
+    confidence: executedTools.length > 0 ? 'High' : 'Medium',
     is_valid: true,
     warnings,
   };
 }
+

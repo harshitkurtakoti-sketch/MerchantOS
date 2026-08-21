@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Upload, FileCheck, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Upload, FileCheck, CheckCircle2, Camera } from 'lucide-react';
+import { OCRInvoiceCapture } from '@/components/OCRInvoiceCapture';
 
 export default function DataImportPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -30,32 +31,40 @@ export default function DataImportPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto font-sans">
+    <div className="space-y-6 max-w-4xl mx-auto font-sans pb-16">
       <div>
         <h1 className="text-2xl font-black text-slate-900 flex items-center gap-2">
-          <Upload className="w-6 h-6 text-emerald-600" /> Data Import Pipeline
+          <Upload className="w-6 h-6 text-emerald-600" /> Data Import & Bill Capture Pipeline
         </h1>
         <p className="text-xs text-slate-500 mt-1">
-          Upload CSV or XLSX transaction files with column mapping & row validation.
+          Capture paper bills via on-device camera OCR / speech or bulk upload CSV & XLSX records.
         </p>
       </div>
 
-      <div className="p-8 rounded-2xl bg-white border border-slate-200/80 border-dashed text-center space-y-4 shadow-xs">
-        <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto border border-emerald-200">
-          <Upload className="w-6 h-6" />
-        </div>
-        <div>
-          <div className="text-sm font-bold text-slate-900">Upload CSV or XLSX File</div>
-          <p className="text-xs text-slate-500 mt-1">Supported entities: Transactions, Sales Line Items, Inventory Events, Expenses</p>
-        </div>
+      {/* On-Device Camera & Voice Capture Flow */}
+      <OCRInvoiceCapture />
 
-        <input type="file" accept=".csv,.xlsx" onChange={handleFileChange} className="hidden" id="csv-upload" />
-        <label
-          htmlFor="csv-upload"
-          className="inline-block px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs cursor-pointer transition-all shadow-md shadow-emerald-600/20"
-        >
-          Select File from Computer
-        </label>
+      <div className="pt-4 border-t border-slate-200">
+        <h2 className="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
+          <Upload className="w-4 h-4 text-emerald-600" /> Batch CSV / XLSX Data Import
+        </h2>
+        <div className="p-8 rounded-2xl bg-white border border-slate-200/80 border-dashed text-center space-y-4 shadow-xs">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto border border-emerald-200">
+            <Upload className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="text-sm font-bold text-slate-900">Upload CSV or XLSX File</div>
+            <p className="text-xs text-slate-500 mt-1">Supported entities: Transactions, Sales Line Items, Inventory Events, Expenses</p>
+          </div>
+
+          <input type="file" accept=".csv,.xlsx" onChange={handleFileChange} className="hidden" id="csv-upload" />
+          <label
+            htmlFor="csv-upload"
+            className="inline-block px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs cursor-pointer transition-all shadow-md shadow-emerald-600/20"
+          >
+            Select File from Device
+          </label>
+        </div>
       </div>
 
       {file && (
@@ -105,3 +114,4 @@ export default function DataImportPage() {
     </div>
   );
 }
+
