@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, ShieldCheck, Cpu, LineChart, Layers, Zap, Globe, Sparkles, Building, Lock } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Cpu, LineChart, Layers, Zap, Globe, Sparkles, Building, Lock, Phone } from 'lucide-react';
+
 
 export default function LandingPage() {
   return (
