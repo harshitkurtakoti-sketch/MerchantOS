@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Building2, Database, Upload, FileSpreadsheet, ArrowRight, CheckCircle, Sparkles } from 'lucide-react';
+import { Building2, Database, Upload, FileSpreadsheet, ArrowRight, CheckCircle, Sparkles, Phone } from 'lucide-react';
+import Link from 'next/link';
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -29,15 +30,19 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen bg-[#FAFAFC] text-slate-900 flex items-center justify-center p-6 font-sans selection:bg-emerald-500 selection:text-white">
       <div className="max-w-xl w-full bg-white border border-slate-200/90 rounded-2xl p-8 shadow-xl shadow-slate-200/50">
-        <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-100">
+        <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
           <div>
             <h1 className="text-xl font-extrabold text-slate-900">Setup MerchantOS Twin</h1>
             <p className="text-xs text-slate-500 mt-1">Configure business profile & select data initialization</p>
           </div>
-          <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-            Step {step} of 2
-          </span>
+          <Link
+            href="/login"
+            className="text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-full transition-all flex items-center gap-1"
+          >
+            <Phone className="w-3 h-3 text-emerald-600" /> Phone OTP
+          </Link>
         </div>
+
 
         {step === 1 ? (
           <div className="space-y-6">

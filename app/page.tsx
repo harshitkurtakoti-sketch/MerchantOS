@@ -22,8 +22,14 @@ export default function LandingPage() {
 
           <div className="flex items-center gap-2 sm:gap-4">
             <Link
+              href="/login"
+              className="text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-2 rounded-xl transition-all flex items-center gap-1.5"
+            >
+              <Phone className="w-3.5 h-3.5 text-emerald-600" /> Phone Login
+            </Link>
+            <Link
               href="/dashboard"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors px-2 sm:px-3 py-2"
+              className="hidden sm:inline-block text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors px-2 sm:px-3 py-2"
             >
               Command Center
             </Link>
@@ -58,18 +64,19 @@ export default function LandingPage() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
               <Link
-                href="/onboarding"
+                href="/login"
                 className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm sm:text-base transition-all duration-200 shadow-xl shadow-emerald-600/20 flex items-center justify-center gap-2"
               >
-                Launch Interactive Simulation <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-200" /> Merchant OTP Login
               </Link>
               <Link
-                href="/dashboard"
-                className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl bg-white border border-slate-300 hover:border-slate-400 text-slate-800 font-semibold text-sm sm:text-base transition-all duration-200 shadow-xs flex items-center justify-center"
+                href="/onboarding"
+                className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm sm:text-base transition-all duration-200 shadow-md flex items-center justify-center gap-2"
               >
-                View Rukmini's Store (Demo)
+                Setup Twin <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
               </Link>
             </div>
+
 
             <div className="mt-12 sm:mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 max-w-4xl mx-auto">
               {[

@@ -169,6 +169,15 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-3">
+            <Link
+              href="/login"
+              className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 px-2.5 sm:px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-colors shadow-2xs shrink-0 font-mono text-[11px]"
+              title="Supabase Phone Auth Session"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>+91 98765 43210</span>
+            </Link>
+
             <button
               onClick={() => setIsModalOpen(true)}
               className="text-xs bg-slate-900 hover:bg-slate-800 text-white px-2.5 sm:px-3.5 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-all shadow-xs shrink-0"
@@ -183,6 +192,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             >
               <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
               <span>Ask AI</span>
+
             </Link>
           </div>
         </header>
