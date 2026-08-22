@@ -50,8 +50,9 @@ self.addEventListener('push', (event) => {
   let data = { title: 'MerchantOS Risk Alert', body: 'Scenario simulation dip below safety buffer.' };
   if (event.data) {
     try {
-      data = event.data.json();
-    } catch (e) {
+      const payload = event.data.json();
+      data = { ...data, ...payload };
+    } catch {
       data.body = event.data.text();
     }
   }

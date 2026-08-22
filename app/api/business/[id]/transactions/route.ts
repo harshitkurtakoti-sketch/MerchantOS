@@ -4,6 +4,7 @@ import { Transaction } from '@/lib/db/types';
 
 export async function POST(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
+  store.ensureInitialized();
   const body = await req.json();
 
   const newTxn: Transaction = {

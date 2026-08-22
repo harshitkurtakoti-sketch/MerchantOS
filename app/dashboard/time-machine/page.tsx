@@ -1,19 +1,26 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { ResponsiveContainer, XAxis, YAxis, Tooltip, Area, ComposedChart, ReferenceLine } from 'recharts';
 import { LineChart as LineIcon, AlertTriangle, RefreshCw, Sliders } from 'lucide-react';
+import { ForecastPoint } from '@/lib/db/types';
+
+interface TimeMachineForecast {
+  horizon_days: number;
+  safety_threshold: number;
+  has_cash_stress: boolean;
+  cash_stress_dates: string[];
+  points: ForecastPoint[];
+}
 
 export default function TimeMachinePage() {
   const [horizon, setHorizon] = useState(90);
   const [salesDelta, setSalesDelta] = useState(0);
   const [inventoryPurchase, setInventoryPurchase] = useState(0);
   const [priceDelta, setPriceDelta] = useState(0);
-  const [forecast, setForecast] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [forecast, setForecast] = useState<TimeMachineForecast | null>(null);
 
-  const fetchForecast = () => {
-    setLoading(true);
+  const fetchForecast = useCallback(() => {
     fetch('/api/business/biz_rukmini_store/time-machine', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -27,15 +34,12 @@ export default function TimeMachinePage() {
       }),
     })
       .then(r => r.json())
-      .then(data => {
-        setForecast(data);
-        setLoading(false);
-      });
-  };
+      .then(setForecast);
+  }, [horizon, salesDelta, inventoryPurchase, priceDelta]);
 
   useEffect(() => {
     fetchForecast();
-  }, [horizon, salesDelta, inventoryPurchase, priceDelta]);
+  }, [fetchForecast]);
 
   return (
     <div className="space-y-4 sm:space-y-6 max-w-7xl mx-auto font-sans">
@@ -96,7 +100,7 @@ export default function TimeMachinePage() {
                 <YAxis stroke="#94a3b8" tick={{ fontSize: 10 }} tickFormatter={v => `₹${(v / 1000).toFixed(0)}k`} />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '12px', fontSize: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
-                  formatter={(val: any) => [`₹${Number(val).toLocaleString('en-IN')}`, '']}
+                  formatter={(val: unknown) => [`₹${Number(val).toLocaleString('en-IN')}`, '']}
                 />
                 <ReferenceLine y={forecast.safety_threshold} stroke="#dc2626" strokeDasharray="3 3" label={{ value: 'Safety Floor', fill: '#dc2626', fontSize: 10, fontWeight: 'bold' }} />
                 <Area type="monotone" dataKey="upper_bound" stroke="none" fill="#059669" fillOpacity={0.08} />

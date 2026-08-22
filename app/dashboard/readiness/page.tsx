@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Award, ShieldAlert, CheckCircle2, Info } from 'lucide-react';
+import { Award, Info } from 'lucide-react';
 import { FinanceReadinessSnapshot } from '@/lib/db/types';
 
 export default function FinanceReadinessPage() {
@@ -29,10 +29,10 @@ export default function FinanceReadinessPage() {
   ];
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto font-sans">
+    <div className="space-y-4 sm:space-y-6 max-w-5xl mx-auto font-sans">
       <div>
-        <h1 className="text-2xl font-black text-slate-900 flex items-center gap-2">
-          <Award className="w-6 h-6 text-emerald-600" /> Financing Readiness Engine
+        <h1 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
+          <Award className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 shrink-0" /> Financing Readiness Engine
         </h1>
         <p className="text-xs text-slate-500 mt-1">
           Underwriting-grade financial readiness signal built from verified merchant behavior over time.
@@ -48,11 +48,11 @@ export default function FinanceReadinessPage() {
       </div>
 
 
-      <div className="p-8 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex flex-col md:flex-row items-center justify-between gap-8">
-        <div className="flex items-center gap-6">
-          <div className="relative w-32 h-32 flex items-center justify-center rounded-full bg-emerald-50/50 border-4 border-emerald-500 shadow-xl shadow-emerald-500/10">
+      <div className="p-5 sm:p-8 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8">
+        <div className="flex items-center gap-4 sm:gap-6 w-full md:w-auto">
+          <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex items-center justify-center rounded-full bg-emerald-50/50 border-4 border-emerald-500 shadow-xl shadow-emerald-500/10 shrink-0">
             <div className="text-center">
-              <span className="text-4xl font-black text-slate-900">{readiness.score}</span>
+              <span className="text-3xl sm:text-4xl font-black text-slate-900">{readiness.score}</span>
               <span className="block text-[10px] text-slate-500 font-extrabold uppercase tracking-wider">/ 100</span>
             </div>
           </div>
@@ -63,7 +63,7 @@ export default function FinanceReadinessPage() {
             </span>
             <h2 className="text-xl font-bold text-slate-900 mt-2">Financing Readiness Index</h2>
             <p className="text-xs text-emerald-800 mt-1 max-w-md italic font-semibold leading-relaxed">
-              "{readiness.qualifying_statement}"
+              &quot;{readiness.qualifying_statement}&quot;
             </p>
           </div>
         </div>

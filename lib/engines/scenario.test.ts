@@ -18,7 +18,7 @@ describe('Scenario Engine Deterministic Tests', () => {
   });
 
   test('Inventory purchase of ₹3,000,000 when cash is lower triggers warning notes', () => {
-    const result = runDeterministicScenario(businessId, { inventory_purchase_amount: 300000 });
+    const result = runDeterministicScenario(businessId, { inventory_purchase_amount: 3000000 });
     expect(result.warning_notes.length).toBeGreaterThan(0);
     expect(result.end_cash.scenario).toBeLessThan(result.end_cash.current);
   });

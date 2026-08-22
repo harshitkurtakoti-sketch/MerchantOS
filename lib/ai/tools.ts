@@ -8,7 +8,7 @@ import { computeFinanceReadiness } from '../engines/finance_readiness';
 import { getSmartProcurementRecommendations } from '../engines/procurement';
 import { getBankLenderMatches } from '../engines/loan_simulator';
 import { getOnlineChannelRecommendations } from '../engines/online_expansion';
-import { store } from '../db/mock_store';
+import { ScenarioAssumptions } from '../db/types';
 
 export const AI_TOOLS_DEFINITIONS = [
   {
@@ -131,7 +131,10 @@ export const AI_TOOLS_DEFINITIONS = [
   },
 ];
 
-export function executeEngineTool(name: string, args: any): { result: any; source_refs: string[] } {
+export function executeEngineTool(
+  name: string,
+  args: ScenarioAssumptions & { business_id?: string; horizon_days?: number; loan_amount?: number }
+): { result: unknown; source_refs: string[] } {
   const bId = args.business_id || 'biz_rukmini_store';
 
   switch (name) {

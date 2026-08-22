@@ -1,6 +1,6 @@
 'use client';
 
-import { History, ShieldCheck, Cpu } from 'lucide-react';
+import { History, ShieldCheck } from 'lucide-react';
 
 const MOCK_AUDIT_LOGS = [
   { id: 'aud_101', timestamp: '2026-08-19 18:14:02', action: 'AI_TOOL_EXECUTION', entity: 'run_scenario', user: 'Rukmini Devi', details: 'Executed inventory_purchase_amount=300000 simulation' },

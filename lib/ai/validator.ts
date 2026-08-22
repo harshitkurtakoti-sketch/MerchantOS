@@ -2,7 +2,7 @@ export interface ValidatedAIResponse {
   answer_text: string;
   recommended_range?: string;
   source_refs: string[];
-  evidence_panel: Record<string, any>;
+  evidence_panel: Record<string, unknown>;
   confidence: 'High' | 'Medium' | 'Low';
   is_valid: boolean;
   warnings: string[];
@@ -10,10 +10,10 @@ export interface ValidatedAIResponse {
 
 export function validateAndAttributeResponse(
   rawAnswer: string,
-  executedTools: Array<{ tool: string; result: any; source_refs: string[] }>
+  executedTools: Array<{ tool: string; result: unknown; source_refs: string[] }>
 ): ValidatedAIResponse {
   const allSourceRefs: string[] = [];
-  const combinedEvidence: Record<string, any> = {};
+  const combinedEvidence: Record<string, unknown> = {};
 
   executedTools.forEach(t => {
     if (t.source_refs) {
@@ -23,7 +23,7 @@ export function validateAndAttributeResponse(
   });
 
   // Strict compliance language enforcement (PRD Sections 11, 12, 20)
-  let sanitizedText = rawAnswer
+  const sanitizedText = rawAnswer
     .replace(/\bfraud\b/gi, 'unusual pattern')
     .replace(/\byou are approved\b/gi, 'appears prepared for additional working-capital financing')
     .replace(/\bguaranteed loan\b/gi, 'potential lender match subject to underwriting')
@@ -45,4 +45,3 @@ export function validateAndAttributeResponse(
     warnings,
   };
 }
-

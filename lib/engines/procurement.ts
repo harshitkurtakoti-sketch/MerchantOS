@@ -35,6 +35,7 @@ export function getSmartProcurementRecommendations(businessId: string): {
   total_projected_profit: number;
   recommendations: ProcurementRecommendation[];
 } {
+  store.ensureInitialized();
   const products = store.products.filter(p => p.business_id === businessId);
   const commerceData = computeCommerceIntelligence(businessId);
   const commerceMap = new Map<string, ProductMarginSummary>(commerceData.map(c => [c.product_id, c]));

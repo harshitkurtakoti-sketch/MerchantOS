@@ -2,11 +2,12 @@ import { store } from '../db/mock_store';
 import { HealthScoreSnapshot, HealthSubScores, ConfidenceLevel } from '../db/types';
 
 export function computeFinancialHealth(businessId: string): HealthScoreSnapshot {
+  store.ensureInitialized();
   const transactions = store.transactions.filter(t => t.business_id === businessId);
   const sales = store.sales.filter(s => s.business_id === businessId);
   const receivables = store.receivables.filter(r => r.business_id === businessId);
-  const payables = store.payables.filter(p => p.business_id === businessId);
   const products = store.products.filter(p => p.business_id === businessId);
+
 
   if (transactions.length === 0 && sales.length === 0) {
     return {

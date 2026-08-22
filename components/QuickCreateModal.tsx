@@ -173,7 +173,7 @@ export function QuickCreateModal({ businessId = 'biz_rukmini_store', onSuccess, 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-slate-700 font-semibold mb-1">Type</label>
-                <select value={txnType} onChange={e => setTxnType(e.target.value as any)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-medium">
+                <select value={txnType} onChange={e => setTxnType(e.target.value as 'income' | 'expense')} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-medium">
                   <option value="income">Income (Sale / Collection)</option>
                   <option value="expense">Expense (Purchase / Opex)</option>
                 </select>
@@ -256,7 +256,7 @@ export function QuickCreateModal({ businessId = 'biz_rukmini_store', onSuccess, 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-slate-700 font-semibold mb-1">Type</label>
-                <select value={recType} onChange={e => setRecType(e.target.value as any)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-medium">
+                <select value={recType} onChange={e => setRecType(e.target.value as 'receivable' | 'payable')} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-medium">
                   <option value="receivable">Receivable (Customer owes you)</option>
                   <option value="payable">Payable (You owe supplier)</option>
                 </select>

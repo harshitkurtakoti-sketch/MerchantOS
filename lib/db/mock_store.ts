@@ -77,6 +77,25 @@ export class MockStore {
     this.audit_logs = [];
     this.notifications = [];
   }
+  public ensureInitialized(): void {
+    if (this.businesses.length === 0) {
+      try {
+        // Lazy require is intentional: a static import would create a circular
+        // module dependency (synthetic_generator -> mock_store -> synthetic_generator).
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const { seedSyntheticDemoBusiness } = require('../demo/synthetic_generator');
+        seedSyntheticDemoBusiness();
+      } catch (err) {
+        console.warn('Auto-seed synthetic business warning:', err);
+      }
+    }
+  }
 }
 
+
 export const store = MockStore.getInstance();
+// Note: do NOT auto-seed here — calling ensureInitialized() at module
+// evaluation time causes a circular import crash because synthetic_generator.ts
+// imports `store` from this same module. Instead, each API route handler calls
+// store.ensureInitialized() lazily on the first request.
+

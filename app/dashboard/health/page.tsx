@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { HeartPulse, CheckCircle2, AlertCircle, Info, ShieldCheck } from 'lucide-react';
+import { HeartPulse } from 'lucide-react';
+import { HealthScoreSnapshot } from '@/lib/db/types';
 
 export default function FinancialHealthPage() {
-  const [health, setHealth] = useState<any>(null);
+  const [health, setHealth] = useState<HealthScoreSnapshot | null>(null);
 
   useEffect(() => {
     fetch('/api/business/biz_rukmini_store/financial-health')

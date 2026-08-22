@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, ShieldCheck, Cpu, LineChart, Layers, Zap, Globe, Sparkles, Building, Lock, Phone } from 'lucide-react';
+import { ArrowRight, ShieldCheck, LineChart, Layers, Zap, Lock, Phone } from 'lucide-react';
 
 
 export default function LandingPage() {
@@ -11,9 +11,11 @@ export default function LandingPage() {
       <nav className="border-b border-slate-200/80 bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 sm:gap-3">
-            <img
+            <Image
               src="/merchantos_logo.png"
               alt="MerchantOS Logo"
+              width={36}
+              height={36}
               className="w-8 h-8 sm:w-9 sm:h-9 object-contain rounded-lg"
             />
             <span className="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900">
@@ -145,9 +147,11 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-12">
             <div className="md:col-span-2 space-y-4">
               <div className="flex items-center gap-3">
-                <img
+                <Image
                   src="/merchantos_logo.png"
                   alt="MerchantOS Logo"
+                  width={32}
+                  height={32}
                   className="w-8 h-8 object-contain rounded-lg bg-white p-0.5"
                 />
                 <span className="font-extrabold text-xl text-white tracking-tight">

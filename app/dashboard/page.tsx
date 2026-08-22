@@ -14,19 +14,21 @@ import {
   LineChart,
   ShoppingBag
 } from 'lucide-react';
+import { HealthScoreSnapshot, RiskEvent } from '@/lib/db/types';
+import { DigitalTwinSnapshot } from '@/lib/engines/digital_twin';
 
 export default function CommandCenter() {
   const router = useRouter();
-  const [health, setHealth] = useState<any>(null);
-  const [twin, setTwin] = useState<any>(null);
-  const [risks, setRisks] = useState<any[]>([]);
+  const [health, setHealth] = useState<HealthScoreSnapshot | null>(null);
+  const [twin, setTwin] = useState<DigitalTwinSnapshot | null>(null);
+  const [risks, setRisks] = useState<RiskEvent[]>([]);
   const [aiInput, setAiInput] = useState('');
 
   useEffect(() => {
     fetch('/api/demo/seed', { method: 'POST' }).then(() => {
       fetch('/api/business/biz_rukmini_store/financial-health').then(r => r.json()).then(setHealth);
       fetch('/api/business/biz_rukmini_store/digital-twin').then(r => r.json()).then(setTwin);
-      fetch('/api/business/biz_rukmini_store/risk').then(r => r.json()).then(d => setRisks(d.risk_events || []));
+      fetch('/api/business/biz_rukmini_store/risk').then(r => r.json()).then((d: { risk_events?: RiskEvent[] }) => setRisks(d.risk_events || []));
     });
   }, []);
 
@@ -52,7 +54,7 @@ export default function CommandCenter() {
             <div className="flex items-center gap-2 text-xs font-extrabold text-emerald-700 uppercase tracking-wider mb-1">
               <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" /> AI Decision Assistant
             </div>
-            <h1 className="text-lg sm:text-xl font-extrabold text-slate-900">"Can I afford ₹3 Lakhs of inventory?"</h1>
+            <h1 className="text-lg sm:text-xl font-extrabold text-slate-900">&quot;Can I afford ₹3 Lakhs of inventory?&quot;</h1>
             <p className="text-xs text-slate-600 mt-1">Ask any financial question — MerchantOS simulates the impact before you act.</p>
           </div>
 
@@ -154,7 +156,9 @@ export default function CommandCenter() {
             {risks.slice(0, 2).map((r, i) => (
               <div key={i} className="p-2.5 rounded-xl bg-amber-50/50 border border-amber-200/70 text-xs">
                 <div className="font-bold text-amber-900">{r.rule_triggered}</div>
-                <div className="text-[11px] text-amber-800/80 mt-0.5">{r.evidence.phrasing_template || 'Review recommended.'}</div>
+                <div className="text-[11px] text-amber-800/80 mt-0.5">
+                  {typeof r.evidence.phrasing_template === 'string' ? r.evidence.phrasing_template : 'Review recommended.'}
+                </div>
               </div>
             ))}
           </div>

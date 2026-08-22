@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Phone, ShieldCheck, ArrowRight, Sparkles, CheckCircle2, Lock } from 'lucide-react';
+import Image from 'next/image';
+import { Phone, ShieldCheck, ArrowRight, Sparkles, CheckCircle2, KeyRound } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase/client';
+import { useStoredJson } from '@/lib/hooks/useStoredJson';
 
 export default function PhoneLoginPage() {
   const router = useRouter();
@@ -14,6 +16,13 @@ export default function PhoneLoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const existingSession = useStoredJson<{ phone?: string }>('merchantos_phone_session');
+  const sessionNotice =
+    !statusMessage && existingSession?.phone
+      ? `Active session detected for ${existingSession.phone}`
+      : statusMessage;
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +37,7 @@ export default function PhoneLoginPage() {
 
     try {
       // Real Supabase Auth Phone OTP Call
-      const { data, error: sbErr } = await supabase.auth.signInWithOtp({
+      const { error: sbErr } = await supabase.auth.signInWithOtp({
         phone: cleanPhone.startsWith('+') ? cleanPhone : `+91${cleanPhone}`,
       });
 
@@ -42,8 +51,12 @@ export default function PhoneLoginPage() {
       setTimeout(() => {
         setLoading(false);
         setStep(2);
-      }, 600);
-    } catch (err: any) {
+        // Focus first OTP field on mobile
+        setTimeout(() => {
+          inputRefs.current[0]?.focus();
+        }, 100);
+      }, 500);
+    } catch (err) {
       console.warn('Phone auth fallback active:', err);
       setLoading(false);
       setStep(2);
@@ -59,13 +72,13 @@ export default function PhoneLoginPage() {
     }
     setError('');
     setLoading(true);
-    setStatusMessage('Verifying OTP code...');
+    setStatusMessage('Verifying OTP session...');
 
     try {
       const cleanPhone = phone.startsWith('+') ? phone : `+91${phone}`;
 
       // Attempt Supabase Verify OTP call
-      const { data, error: sbErr } = await supabase.auth.verifyOtp({
+      const { data } = await supabase.auth.verifyOtp({
         phone: cleanPhone,
         token: code,
         type: 'sms',
@@ -83,12 +96,12 @@ export default function PhoneLoginPage() {
         );
       }
 
-      setStatusMessage('Phone number verified! Redirecting to Command Center...');
+      setStatusMessage('Phone verified! Opening MerchantOS Command Center...');
       setTimeout(() => {
         setLoading(false);
         router.push('/dashboard');
-      }, 600);
-    } catch (err: any) {
+      }, 500);
+    } catch (err) {
       console.warn('Verify fallback active:', err);
       if (typeof window !== 'undefined') {
         localStorage.setItem(
@@ -102,39 +115,83 @@ export default function PhoneLoginPage() {
   };
 
   const handleOtpChange = (index: number, value: string) => {
-    if (value.length > 1) value = value[value.length - 1];
+    // Only accept numeric inputs
+    const cleanVal = value.replace(/\D/g, '');
+    if (!cleanVal && value !== '') return;
+
+    const char = cleanVal.slice(-1);
     const newOtp = [...otp];
-    newOtp[index] = value;
+    newOtp[index] = char;
     setOtp(newOtp);
 
     // Auto-focus next input
-    if (value && index < 5) {
-      const nextInput = document.getElementById(`otp-input-${index + 1}`);
-      if (nextInput) nextInput.focus();
+    if (char && index < 5) {
+      inputRefs.current[index + 1]?.focus();
     }
   };
 
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace') {
+      if (!otp[index] && index > 0) {
+        // Move to previous box if current is empty
+        const newOtp = [...otp];
+        newOtp[index - 1] = '';
+        setOtp(newOtp);
+        inputRefs.current[index - 1]?.focus();
+      } else {
+        const newOtp = [...otp];
+        newOtp[index] = '';
+        setOtp(newOtp);
+      }
+    } else if (e.key === 'ArrowLeft' && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    } else if (e.key === 'ArrowRight' && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    if (pastedData) {
+      const digits = pastedData.split('');
+      const newOtp = [...otp];
+      for (let i = 0; i < 6; i++) {
+        newOtp[i] = digits[i] || '';
+      }
+      setOtp(newOtp);
+      const nextIndex = Math.min(digits.length, 5);
+      inputRefs.current[nextIndex]?.focus();
+    }
+  };
+
+  const fillDemoOtp = () => {
+    setOtp(['1', '2', '3', '4', '5', '6']);
+    setError('');
+    setStatusMessage('Pre-filled test code 123456. Click Verify to continue.');
+  };
+
   return (
-    <div className="min-h-screen bg-[#FAFAFC] text-slate-900 flex flex-col justify-between p-4 sm:p-6 font-sans selection:bg-emerald-500 selection:text-white">
+    <div className="min-h-screen bg-[#FAFAFC] text-slate-900 flex flex-col justify-between p-3.5 sm:p-6 font-sans selection:bg-emerald-500 selection:text-white">
       {/* Header */}
       <header className="flex items-center justify-between max-w-md w-full mx-auto pt-2">
         <Link href="/" className="flex items-center gap-2">
-          <img src="/merchantos_logo.png" alt="MerchantOS" className="w-8 h-8 rounded-lg object-contain" />
+          <Image src="/merchantos_logo.png" alt="MerchantOS" width={32} height={32} className="w-8 h-8 rounded-lg object-contain" />
           <span className="font-black text-lg text-slate-900 tracking-tight">
             Merchant<span className="text-emerald-600">OS</span>
           </span>
         </Link>
         <span className="text-[10px] bg-emerald-50 text-emerald-700 font-bold border border-emerald-200 px-2 py-0.5 rounded-full font-mono">
-          Supabase Phone Auth
+          Phone OTP Auth
         </span>
       </header>
 
       {/* Main Form Container */}
-      <main className="max-w-md w-full mx-auto my-auto py-8">
-        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/60 space-y-6">
+      <main className="max-w-md w-full mx-auto my-auto py-6">
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-5 sm:p-8 shadow-xl shadow-slate-200/60 space-y-5">
           {/* Title Area */}
           <div className="space-y-1 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-3 border border-emerald-200">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-2.5 border border-emerald-200 shadow-2xs">
               {step === 1 ? <Phone className="w-6 h-6" /> : <ShieldCheck className="w-6 h-6" />}
             </div>
             <h1 className="text-xl font-extrabold text-slate-900">
@@ -159,9 +216,9 @@ export default function PhoneLoginPage() {
             </div>
           )}
 
-          {statusMessage && (
+          {sessionNotice && (
             <div className="p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-medium rounded-xl text-center">
-              {statusMessage}
+              {sessionNotice}
             </div>
           )}
 
@@ -174,10 +231,12 @@ export default function PhoneLoginPage() {
                   <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
                   <input
                     type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+91 98765 43210"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-900 font-bold focus:outline-none focus:border-emerald-500 focus:bg-white transition-all font-mono"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-900 font-bold focus:outline-none focus:border-emerald-500 focus:bg-white transition-all font-mono shadow-2xs"
                     required
                   />
                 </div>
@@ -186,14 +245,14 @@ export default function PhoneLoginPage() {
               <div className="p-3 bg-emerald-50/70 border border-emerald-200/80 rounded-xl text-[11px] text-emerald-800 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>
-                  Demo Mode: Test code <strong className="font-mono">123456</strong> pre-configured for instant mobile verification.
+                  Demo Mode: Test code <strong className="font-mono">123456</strong> configured for instant verification.
                 </span>
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-all shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold text-xs transition-all shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2"
               >
                 {loading ? 'Sending OTP Code...' : 'Send Login OTP'} <ArrowRight className="w-4 h-4" />
               </button>
@@ -202,21 +261,38 @@ export default function PhoneLoginPage() {
 
           {/* Step 2: OTP Verification Input */}
           {step === 2 && (
-            <form onSubmit={handleVerifyOtp} className="space-y-5">
+            <form onSubmit={handleVerifyOtp} className="space-y-4 sm:space-y-5">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-2 text-center">
-                  6-Digit Verification Code
-                </label>
-                <div className="flex justify-between gap-1.5 sm:gap-2">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-bold text-slate-700">
+                    6-Digit Verification Code
+                  </label>
+                  <button
+                    type="button"
+                    onClick={fillDemoOtp}
+                    className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
+                  >
+                    <KeyRound className="w-3 h-3" /> Fill 123456
+                  </button>
+                </div>
+
+                {/* Highly Responsive Mobile 6-Digit Grid */}
+                <div className="flex items-center justify-between gap-1.5 sm:gap-2.5">
                   {otp.map((digit, idx) => (
                     <input
                       key={idx}
+                      ref={(el) => { inputRefs.current[idx] = el; }}
                       id={`otp-input-${idx}`}
                       type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      autoComplete={idx === 0 ? 'one-time-code' : 'off'}
                       maxLength={1}
                       value={digit}
                       onChange={(e) => handleOtpChange(idx, e.target.value)}
-                      className="w-11 h-12 text-center text-lg font-mono font-bold bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:bg-white transition-all text-slate-900"
+                      onKeyDown={(e) => handleKeyDown(idx, e)}
+                      onPaste={handlePaste}
+                      className="w-10 sm:w-12 h-11 sm:h-12 text-center text-lg sm:text-xl font-mono font-black bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 transition-all text-slate-900 shrink-0"
                     />
                   ))}
                 </div>
@@ -225,7 +301,7 @@ export default function PhoneLoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-all shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold text-xs transition-all shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2"
               >
                 {loading ? (
                   'Verifying Session...'
@@ -239,7 +315,7 @@ export default function PhoneLoginPage() {
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="w-full text-center text-xs text-slate-500 hover:text-slate-800 font-medium block"
+                className="w-full text-center text-xs text-slate-500 hover:text-slate-800 font-medium block pt-1"
               >
                 ← Edit phone number ({phone})
               </button>
@@ -255,4 +331,5 @@ export default function PhoneLoginPage() {
     </div>
   );
 }
+
 

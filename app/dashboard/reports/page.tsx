@@ -2,16 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import { FileText, Download, Printer, HeartPulse, Award, ShoppingBag } from 'lucide-react';
+import { HealthScoreSnapshot, FinanceReadinessSnapshot } from '@/lib/db/types';
+import { ProductMarginSummary } from '@/lib/engines/commerce';
 
 export default function ReportsPage() {
-  const [health, setHealth] = useState<any>(null);
-  const [readiness, setReadiness] = useState<any>(null);
-  const [products, setProducts] = useState<any[]>([]);
+  const [health, setHealth] = useState<HealthScoreSnapshot | null>(null);
+  const [readiness, setReadiness] = useState<FinanceReadinessSnapshot | null>(null);
+  const [products, setProducts] = useState<ProductMarginSummary[]>([]);
 
   useEffect(() => {
     fetch('/api/business/biz_rukmini_store/financial-health').then(r => r.json()).then(setHealth);
     fetch('/api/business/biz_rukmini_store/finance-readiness').then(r => r.json()).then(setReadiness);
-    fetch('/api/business/biz_rukmini_store/commerce/profitability').then(r => r.json()).then(d => setProducts(d.products || []));
+    fetch('/api/business/biz_rukmini_store/commerce/profitability').then(r => r.json()).then((d: { products?: ProductMarginSummary[] }) => setProducts(d.products || []));
   }, []);
 
   const handlePrint = () => {
@@ -65,7 +67,7 @@ export default function ReportsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-4 sm:pb-6 gap-3">
           <div>
             <div className="text-xs font-extrabold uppercase tracking-widest text-emerald-700">MerchantOS Executive Financial Brief</div>
-            <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1">Rukmini's Kirana & General Store</h2>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1">Rukmini&apos;s Kirana &amp; General Store</h2>
             <div className="text-xs text-slate-500 mt-0.5 font-mono">Report Generated: {new Date().toLocaleDateString('en-IN')}</div>
           </div>
           <div className="sm:text-right self-start sm:self-auto">

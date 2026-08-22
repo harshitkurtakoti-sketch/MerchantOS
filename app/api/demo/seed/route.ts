@@ -10,7 +10,7 @@ export async function POST() {
       business_id: businessId,
       owner_id: ownerId,
     });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (err) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : 'Seeding failed' }, { status: 500 });
   }
 }

@@ -1,12 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { Upload, FileCheck, CheckCircle2, Camera } from 'lucide-react';
+import { Upload, FileCheck, CheckCircle2 } from 'lucide-react';
 import { OCRInvoiceCapture } from '@/components/OCRInvoiceCapture';
+
+interface ParsedRow {
+  date: string;
+  type: string;
+  category: string;
+  amount: string;
+  counterparty: string;
+}
 
 export default function DataImportPage() {
   const [file, setFile] = useState<File | null>(null);
-  const [parsedRows, setParsedRows] = useState<any[]>([]);
+  const [parsedRows, setParsedRows] = useState<ParsedRow[]>([]);
   const [importing, setImporting] = useState(false);
   const [success, setSuccess] = useState(false);
 

@@ -1,16 +1,8 @@
 import { store } from '../db/mock_store';
 import {
-  Business,
-  Product,
   Supplier,
   Customer,
-  Sale,
-  Transaction,
-  Expense,
-  Receivable,
-  Payable,
-  InventoryEvent,
-  RiskEvent
+  PaymentMethod
 } from '../db/types';
 
 export function seedSyntheticDemoBusiness(): { businessId: string; ownerId: string } {
@@ -126,7 +118,7 @@ export function seedSyntheticDemoBusiness(): { businessId: string; ownerId: stri
       const prodIndex = (i + s * 3) % productsList.length;
       const product = productsList[prodIndex];
       const qty = Math.floor(Math.random() * 4) + 1;
-      const paymentMethod = s % 3 === 0 ? 'upi' : s % 3 === 1 ? 'cash' : 'card';
+      const paymentMethod: PaymentMethod = s % 3 === 0 ? 'upi' : s % 3 === 1 ? 'cash' : 'card';
       const customer = s % 4 === 0 ? customers[s % customers.length] : undefined;
 
       store.sales.push({
@@ -137,7 +129,7 @@ export function seedSyntheticDemoBusiness(): { businessId: string; ownerId: stri
         quantity: qty,
         unit_price: product.price,
         discount_pct: product.id === 'prod_04' || product.id === 'prod_05' ? 5 : 0,
-        payment_method: paymentMethod as any,
+        payment_method: paymentMethod,
         sale_date: dateStr,
         return_flag: false,
       });
@@ -151,7 +143,7 @@ export function seedSyntheticDemoBusiness(): { businessId: string; ownerId: stri
         category: 'Sales',
         amount: Math.round(saleAmount),
         counterparty: customer ? customer.name : 'Walk-in Retail Customer',
-        payment_method: paymentMethod as any,
+        payment_method: paymentMethod,
         transaction_date: dateStr,
         source: 'system_generated',
       });

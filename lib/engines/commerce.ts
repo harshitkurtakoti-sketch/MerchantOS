@@ -22,6 +22,7 @@ export interface ProductMarginSummary {
 }
 
 export function computeCommerceIntelligence(businessId: string): ProductMarginSummary[] {
+  store.ensureInitialized();
   const products = store.products.filter(p => p.business_id === businessId);
   const sales = store.sales.filter(s => s.business_id === businessId);
 

@@ -13,6 +13,7 @@ export function computeTimeMachineForecast(
   cash_stress_dates: string[];
   points: ForecastPoint[];
 } {
+  store.ensureInitialized();
   const transactions = store.transactions.filter(t => t.business_id === businessId);
   const receivables = store.receivables.filter(r => r.business_id === businessId && r.status !== 'paid');
   const payables = store.payables.filter(p => p.business_id === businessId && p.status !== 'paid');

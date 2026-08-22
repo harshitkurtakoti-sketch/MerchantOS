@@ -1,8 +1,9 @@
 'use client';
 
-import { ReactNode, useState, useEffect } from 'react';
+import { ReactNode, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Image from 'next/image';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
   HeartPulse,
@@ -21,9 +22,12 @@ import {
   Plus,
   FileText,
   Menu,
-  X
+  X,
+  LogOut
 } from 'lucide-react';
 import { QuickCreateModal } from '@/components/QuickCreateModal';
+import { supabase } from '@/lib/supabase/client';
+import { useStoredJson, removeStoredKey } from '@/lib/hooks/useStoredJson';
 
 const NAV_ITEMS = [
   { label: 'Command Center', href: '/dashboard', icon: LayoutDashboard },
@@ -37,27 +41,29 @@ const NAV_ITEMS = [
   { label: 'Finance Readiness', href: '/dashboard/readiness', icon: Award },
   { label: 'Reverse Loan Simulator', href: '/dashboard/loan-simulator', icon: Calculator },
   { label: 'Reports & PDF Export', href: '/dashboard/reports', icon: FileText },
-  { label: 'Data Import', href: '/dashboard/import', icon: Upload },
+  { label: 'Data Import & OCR', href: '/dashboard/import', icon: Upload },
   { label: 'Audit Trail', href: '/dashboard/audit', icon: History },
   { label: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 
-export default function DashboardLayout({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+interface NavContentProps {
+  pathname: string;
+  userPhone: string;
+  merchantName: string;
+  onNavigate: () => void;
+  onLogout: () => void;
+}
 
-  useEffect(() => {
-    setIsMobileNavOpen(false);
-  }, [pathname]);
-
-  const NavContent = () => (
+function NavContent({ pathname, userPhone, merchantName, onNavigate, onLogout }: NavContentProps) {
+  return (
     <div className="flex flex-col h-full bg-white">
       <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between shrink-0">
-        <Link href="/" className="flex items-center gap-2.5" onClick={() => setIsMobileNavOpen(false)}>
-          <img
+        <Link href="/" className="flex items-center gap-2.5" onClick={onNavigate}>
+          <Image
             src="/merchantos_logo.png"
             alt="MerchantOS Logo"
+            width={32}
+            height={32}
             className="w-8 h-8 object-contain rounded-lg"
           />
           <span className="font-extrabold text-lg tracking-tight text-slate-900">
@@ -65,7 +71,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </span>
         </Link>
         <button
-          onClick={() => setIsMobileNavOpen(false)}
+          onClick={onNavigate}
           className="md:hidden p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
           aria-label="Close menu"
         >
@@ -82,7 +88,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <Link
               key={item.href}
               href={item.href}
-              onClick={() => setIsMobileNavOpen(false)}
+              onClick={onNavigate}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 ${
                 isActive
                   ? 'bg-emerald-50 text-emerald-700 font-bold border border-emerald-200/80 shadow-xs'
@@ -103,17 +109,46 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         })}
       </nav>
 
-      <div className="p-4 border-t border-slate-100 bg-slate-50/50 shrink-0">
+      <div className="p-3.5 border-t border-slate-100 bg-slate-50/70 space-y-2.5 shrink-0">
         <div className="flex items-center justify-between">
-          <div className="truncate">
-            <div className="text-xs font-bold text-slate-900 truncate">Rukmini's Kirana Store</div>
-            <div className="text-[10px] text-slate-500 truncate font-mono">ID: biz_rukmini_store</div>
+          <div className="truncate pr-1">
+            <div className="text-xs font-bold text-slate-900 truncate">{merchantName}</div>
+            <div className="text-[10px] text-slate-500 truncate font-mono">{userPhone}</div>
           </div>
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0 ml-2" />
         </div>
+
+        <button
+          onClick={onLogout}
+          className="w-full py-2 px-3 rounded-xl bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-600 hover:text-rose-700 font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-2xs"
+        >
+          <LogOut className="w-3.5 h-3.5" /> Logout Session
+        </button>
       </div>
     </div>
   );
+}
+
+export default function DashboardLayout({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+
+  const session = useStoredJson<{ phone?: string }>('merchantos_phone_session');
+  const twinProfile = useStoredJson<{ businessName?: string }>('merchantos_twin_profile');
+  const userPhone = session?.phone ?? '+91 98765 43210';
+  const merchantName = twinProfile?.businessName ?? "Rukmini's Kirana Store";
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch {}
+    removeStoredKey('merchantos_phone_session');
+    router.push('/login');
+  };
+
+  const closeMobileNav = () => setIsMobileNavOpen(false);
 
   return (
     <div className="min-h-screen bg-[#FAFAFC] text-slate-900 flex flex-col font-sans selection:bg-emerald-500 selection:text-white">
@@ -124,14 +159,20 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       />
 
       <aside className="hidden md:flex w-64 border-r border-slate-200/90 flex-col fixed inset-y-0 left-0 z-40 shadow-xs">
-        <NavContent />
+        <NavContent
+          pathname={pathname}
+          userPhone={userPhone}
+          merchantName={merchantName}
+          onNavigate={closeMobileNav}
+          onLogout={handleLogout}
+        />
       </aside>
 
       <div
         className={`fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 transition-opacity duration-300 md:hidden ${
           isMobileNavOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
-        onClick={() => setIsMobileNavOpen(false)}
+        onClick={closeMobileNav}
       />
 
       <aside
@@ -139,7 +180,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           isMobileNavOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <NavContent />
+        <NavContent
+          pathname={pathname}
+          userPhone={userPhone}
+          merchantName={merchantName}
+          onNavigate={closeMobileNav}
+          onLogout={handleLogout}
+        />
       </aside>
 
       <div className="w-full md:pl-64 flex-1 flex flex-col min-w-0">
@@ -153,7 +200,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               <Menu className="w-5 h-5 text-slate-800" />
             </button>
 
-            <Link href="/" className="flex items-center gap-1.5 md:hidden font-extrabold text-sm text-slate-900">
+            <Link href="/dashboard" className="flex items-center gap-1.5 md:hidden font-extrabold text-sm text-slate-900">
               <div className="w-6 h-6 rounded-md bg-emerald-600 flex items-center justify-center">
                 <Cpu className="w-3.5 h-3.5 text-white" />
               </div>
@@ -170,12 +217,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
           <div className="flex items-center gap-1.5 sm:gap-3">
             <Link
-              href="/login"
-              className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 px-2.5 sm:px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-colors shadow-2xs shrink-0 font-mono text-[11px]"
-              title="Supabase Phone Auth Session"
+              href="/dashboard/twin"
+              className="hidden sm:flex text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 px-2.5 sm:px-3 py-1.5 rounded-lg font-bold items-center gap-1.5 transition-colors shadow-2xs shrink-0 font-mono text-[11px]"
+              title="Verified Phone Auth Session"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>+91 98765 43210</span>
+              <span>{userPhone}</span>
             </Link>
 
             <button
@@ -191,13 +238,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               className="text-xs bg-emerald-50 hover:bg-emerald-100/80 text-emerald-700 border border-emerald-200 px-2.5 sm:px-3.5 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-colors shadow-xs shrink-0"
             >
               <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Ask AI</span>
-
+              <span className="hidden xs:inline">Ask</span> AI
             </Link>
           </div>
         </header>
 
-        <main className="flex-1 p-3.5 sm:p-6 overflow-y-auto max-w-full pb-20 md:pb-6">{children}</main>
+        <main className="flex-1 p-3 sm:p-6 overflow-y-auto max-w-full pb-24 md:pb-6">{children}</main>
 
         {/* Mobile Phone Bottom Navigation Bar */}
         <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-lg px-2 py-1.5 flex items-center justify-around">
@@ -255,6 +301,3 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     </div>
   );
 }
-
-
-

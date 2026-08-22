@@ -30,6 +30,7 @@ export function getOnlineChannelRecommendations(businessId: string): {
   total_potential_monthly_uplift: string;
   channels: OnlineChannelRecommendation[];
 } {
+  store.ensureInitialized();
   const business = store.businesses.find(b => b.id === businessId) || {
     id: businessId,
     name: "Rukmini's Kirana & General Store",

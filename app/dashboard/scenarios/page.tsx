@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Layers, RefreshCw, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { useEffect, useState, useCallback } from 'react';
+import { Layers, RefreshCw, AlertTriangle } from 'lucide-react';
 import { ScenarioResultSnapshot } from '@/lib/db/types';
 
 export default function ScenariosPage() {
@@ -14,7 +14,7 @@ export default function ScenariosPage() {
 
   const [res, setRes] = useState<ScenarioResultSnapshot | null>(null);
 
-  const runSimulation = () => {
+  const runSimulation = useCallback(() => {
     fetch('/api/business/biz_rukmini_store/scenarios/simulate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -29,11 +29,11 @@ export default function ScenariosPage() {
     })
       .then(r => r.json())
       .then(setRes);
-  };
+  }, [salesPct, pricePct, inventoryPurchase, discountPct, mktgSpend, opexPct]);
 
   useEffect(() => {
     runSimulation();
-  }, [salesPct, pricePct, inventoryPurchase, discountPct, mktgSpend, opexPct]);
+  }, [runSimulation]);
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto font-sans">
@@ -142,8 +142,8 @@ export default function ScenariosPage() {
           </span>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs text-left">
+        <div className="overflow-x-auto -mx-1 sm:mx-0">
+          <table className="w-full text-xs text-left min-w-[520px]">
             <thead>
               <tr className="border-b border-slate-200 text-slate-500 uppercase text-[10px]">
                 <th className="py-3 px-4">Financial Metric</th>

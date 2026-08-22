@@ -215,7 +215,7 @@ export interface RiskEvent {
   entity_id?: string;
   rule_triggered: string;
   severity: RiskSeverity;
-  evidence: Record<string, any>;
+  evidence: Record<string, unknown>;
   status: RiskStatus;
   reviewed_by?: string;
   reviewed_at?: string;
@@ -270,8 +270,8 @@ export interface AIConversation {
 
 export interface ToolCallRef {
   tool: string;
-  parameters: Record<string, any>;
-  result: Record<string, any>;
+  parameters: Record<string, unknown>;
+  result: Record<string, unknown>;
 }
 
 export interface AIMessage {
@@ -280,7 +280,7 @@ export interface AIMessage {
   role: AIRole;
   content: string;
   tool_calls?: ToolCallRef[];
-  tool_results?: Record<string, any>;
+  tool_results?: Record<string, unknown>;
   source_refs?: string[];
   created_at: string;
 }
@@ -290,7 +290,7 @@ export interface AIRecommendation {
   conversation_id?: string;
   business_id: string;
   recommendation_text: string;
-  evidence: Record<string, any>;
+  evidence: Record<string, unknown>;
   status: RecommendationStatus;
   created_at: string;
 }
@@ -302,8 +302,8 @@ export interface AuditLog {
   action_type: string;
   entity_type: string;
   entity_id?: string;
-  before_state?: Record<string, any>;
-  after_state?: Record<string, any>;
+  before_state?: Record<string, unknown>;
+  after_state?: Record<string, unknown>;
   ip_address?: string;
   created_at: string;
 }
@@ -313,7 +313,7 @@ export interface Notification {
   business_id: string;
   user_id?: string;
   type: string;
-  payload: Record<string, any>;
+  payload: Record<string, unknown>;
   read: boolean;
   created_at: string;
 }

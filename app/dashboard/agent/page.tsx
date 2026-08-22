@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, Suspense, useRef, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { MessageSquare, Send, Sparkles, ChevronDown, ChevronUp, FileText } from 'lucide-react';
 
@@ -8,7 +8,7 @@ interface ChatMessage {
   id: string;
   role: 'user' | 'agent';
   text: string;
-  evidence?: any;
+        evidence?: Record<string, unknown> | null;
   confidence?: string;
   source_refs?: string[];
   recommended_range?: string;
@@ -39,7 +39,7 @@ function AgentPageContent() {
   const [loading, setLoading] = useState(false);
   const [expandedMsgId, setExpandedMsgId] = useState<string | null>(null);
 
-  const handleSend = async (qText?: string) => {
+  const handleSend = useCallback(async (qText?: string) => {
     const query = qText || input;
     if (!query.trim()) return;
 
@@ -56,12 +56,18 @@ function AgentPageContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: query, business_id: 'biz_rukmini_store' }),
       });
-      const data = await res.json();
+      const data: {
+        answer?: string;
+  evidence?: Record<string, unknown> | null;
+        confidence?: string;
+        source_refs?: string[];
+        recommended_range?: string;
+      } = await res.json();
 
       const agentMsg: ChatMessage = {
         id: `agent_${Date.now()}`,
         role: 'agent',
-        text: data.answer,
+        text: data.answer ?? 'Sorry, I could not process that question.',
         evidence: data.evidence,
         confidence: data.confidence,
         source_refs: data.source_refs,
@@ -74,17 +80,19 @@ function AgentPageContent() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [input]);
 
+  const initialQSentRef = useRef(false);
   useEffect(() => {
-    if (initialQ) {
+    if (initialQ && !initialQSentRef.current) {
+      initialQSentRef.current = true;
       handleSend(initialQ);
     }
-  }, [initialQ]);
+  }, [initialQ, handleSend]);
 
   return (
-    <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6 flex flex-col h-[calc(100vh-7.5rem)] sm:h-[calc(100vh-6rem)] font-sans">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+    <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4 flex flex-col h-[calc(100dvh-11.5rem)] md:h-[calc(100vh-7rem)] font-sans">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1.5 shrink-0">
         <div>
           <h1 className="text-lg sm:text-xl font-black text-slate-900 flex items-center gap-2">
             <MessageSquare className="w-5 h-5 text-emerald-600 shrink-0" /> AI Decision Agent
@@ -98,12 +106,13 @@ function AgentPageContent() {
         </span>
       </div>
 
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 shrink-0 scrollbar-none">
+
+      <div className="flex flex-wrap items-center gap-2">
         {SUGGESTIONS.map((s, i) => (
           <button
             key={i}
             onClick={() => handleSend(s)}
-            className="text-xs bg-white border border-slate-200 hover:border-emerald-500/50 text-slate-700 hover:text-slate-900 px-3 py-1.5 rounded-xl whitespace-nowrap transition-colors shadow-2xs font-medium shrink-0"
+            className="text-xs bg-white border border-slate-200 hover:border-emerald-500/50 text-slate-700 hover:text-slate-900 px-3 py-1.5 rounded-xl transition-colors shadow-2xs font-medium"
           >
             {s}
           </button>

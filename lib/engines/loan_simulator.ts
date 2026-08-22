@@ -29,7 +29,7 @@ export interface BankLenderMatch {
   scheme_type: 'Government Subsidized' | 'Private MSME Line' | 'Public Sector Working Capital' | 'Instant Digital Line';
 }
 
-export function getBankLenderMatches(businessId: string, loanAmount: number = 500000): BankLenderMatch[] {
+export function getBankLenderMatches(businessId: string, _loanAmount: number = 500000): BankLenderMatch[] {
   const readiness = computeFinanceReadiness(businessId);
   const score = readiness.score;
 

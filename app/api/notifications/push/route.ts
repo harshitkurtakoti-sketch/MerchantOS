@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json().catch(() => ({}));
+    const body = await req.json().catch(() => ({})) as {
+      title?: string;
+      message?: string;
+      business_id?: string;
+    };
     const {
       title = 'MerchantOS Scenario Risk Alert',
       message = 'Simulation Warning: Projected cash balance dips below ₹65,000 safety threshold on Day 14.',
@@ -21,7 +25,7 @@ export async function POST(req: NextRequest) {
         trigger_event: 'SCENARIO_RISK_THRESHOLD_EXCEEDED',
       },
     });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Push notification failed' }, { status: 500 });
+  } catch (err) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : 'Push notification failed' }, { status: 500 });
   }
 }

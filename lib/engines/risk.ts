@@ -2,6 +2,7 @@ import { store } from '../db/mock_store';
 import { RiskEvent } from '../db/types';
 
 export function evaluateRiskGraph(businessId: string): RiskEvent[] {
+  store.ensureInitialized();
   const existingRisks = store.risk_events.filter(r => r.business_id === businessId);
   const transactions = store.transactions.filter(t => t.business_id === businessId);
 
@@ -44,8 +45,9 @@ export function evaluateRiskGraph(businessId: string): RiskEvent[] {
 
   return generatedEvents.map(event => {
     const cleanRule = sanitizeRiskText(event.rule_triggered);
-    const cleanPhrasing = event.evidence?.phrasing_template
-      ? sanitizeRiskText(event.evidence.phrasing_template)
+    const rawPhrasing = event.evidence?.phrasing_template;
+    const cleanPhrasing = typeof rawPhrasing === 'string'
+      ? sanitizeRiskText(rawPhrasing)
       : 'Unusual pattern detected. Review recommended.';
 
     return {

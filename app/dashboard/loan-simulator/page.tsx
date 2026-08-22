@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Calculator, AlertTriangle, ArrowRight, ShieldCheck, Building, CheckCircle2, Sparkles, Clock, FileText } from 'lucide-react';
+import { useEffect, useState, useCallback } from 'react';
+import { Calculator, AlertTriangle, Building, CheckCircle2, Sparkles, Clock } from 'lucide-react';
 import { LoanScenarioResult, BankLenderMatch } from '@/lib/engines/loan_simulator';
 
 export default function LoanSimulatorPage() {
@@ -16,7 +16,7 @@ export default function LoanSimulatorPage() {
     bank_matches: BankLenderMatch[];
   } | null>(null);
 
-  const runSim = () => {
+  const runSim = useCallback(() => {
     fetch('/api/business/biz_rukmini_store/loan-simulator', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -28,11 +28,11 @@ export default function LoanSimulatorPage() {
     })
       .then(r => r.json())
       .then(setSimRes);
-  };
+  }, [amount, interest, tenure]);
 
   useEffect(() => {
     runSim();
-  }, [amount, interest, tenure]);
+  }, [runSim]);
 
   const handleApplyBankRate = (bank: BankLenderMatch) => {
     setInterest(bank.indicative_interest_rate_pct);

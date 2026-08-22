@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ShoppingBag, AlertCircle, Sparkles, TrendingUp, CheckCircle2, ArrowRight, PackageCheck, AlertTriangle, Globe, Store, Smartphone, ExternalLink } from 'lucide-react';
+import { ShoppingBag, AlertCircle, Sparkles, CheckCircle2, ArrowRight, AlertTriangle, Globe } from 'lucide-react';
 import Link from 'next/link';
 import { ProductMarginSummary } from '@/lib/engines/commerce';
 import { ProcurementRecommendation } from '@/lib/engines/procurement';
@@ -260,8 +260,8 @@ export default function CommerceIntelligencePage() {
           <span className="text-xs text-slate-500 font-medium">{products.length} Active SKUs Analyzed</span>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs text-left">
+        <div className="overflow-x-auto -mx-1 sm:mx-0">
+          <table className="w-full text-xs text-left min-w-[640px]">
             <thead>
               <tr className="border-b border-slate-200 text-slate-500 uppercase text-[10px]">
                 <th className="py-3 px-4">Product Name & SKU</th>
